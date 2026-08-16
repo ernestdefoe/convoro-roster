@@ -721,6 +721,23 @@ return [
         );
 
         assertSame([4 => 'https://x/4.jpg'], $nickname, 'a nickname in the name stopped him matching himself');
+
+        /*
+         * 🚨 And the same rule facing the other way. Two of the readers pick up
+         * coaches as well as players, because those sites build both cards from
+         * the same markup — so a father coaching his son would otherwise put
+         * his own face on the boy's page, decided by nothing but who the page
+         * listed last.
+         */
+        $coachAndPlayer = $photos->pair(
+            [
+                ['first' => 'Jaden', 'last' => 'Okafor', 'jersey' => null, 'photo' => 'https://x/coach.jpg'],
+                ['first' => 'Jaden', 'last' => 'Okafor', 'jersey' => null, 'photo' => 'https://x/player.jpg'],
+            ],
+            $squad,
+        );
+
+        assertSame([], $coachAndPlayer, 'one of two identical names on the school page was picked anyway');
     },
 
     'a roster page nobody can parse any more returns nothing, not nonsense' => static function (): void {

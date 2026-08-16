@@ -174,12 +174,32 @@ class Photos
             return [];
         }
 
+        /*
+         * 🚨 The same rule on the site's side of the comparison, and it is not
+         * theoretical: two of the four readers pick up COACHES as well as
+         * players, because on those sites a coach's card is built from the same
+         * markup. A coach who shares a surname and an initial with one of his
+         * players — which is exactly what a father coaching his son looks
+         * like — would otherwise be written over the player's own face,
+         * depending on nothing but which of them the page listed last.
+         */
+        $seen = [];
+
+        foreach ($players as $player) {
+            $key = $this->key((string) $player['first'], (string) $player['last']);
+            $seen[$key] = ($seen[$key] ?? 0) + 1;
+        }
+
         $updates = [];
 
         foreach ($players as $player) {
             $key = $this->key((string) $player['first'], (string) $player['last']);
 
             if ($key === '' || !isset($ours[$key]) || (string) $player['photo'] === '') {
+                continue;
+            }
+
+            if (($seen[$key] ?? 0) > 1) {
                 continue;
             }
 
