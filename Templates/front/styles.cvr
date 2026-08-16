@@ -161,6 +161,53 @@
         background: var(--c-inset);
     }
 
+    /*
+     * 🚨 No underline on hover, anywhere in Almanac. These pages are mostly
+     * links — every roster row, every crest, every opponent — and underlining
+     * on hover makes a table of names twitch line by line as the pointer
+     * crosses it. The row highlight already says what is under the cursor.
+     */
+    .alm-team:hover,
+    .alm-table a:hover,
+    .alm-topic-list a:hover,
+    .alm-player-head a:hover {
+        text-decoration: none;
+    }
+
+    /*
+     * 🚨 The career tables share ONE column grid.
+     *
+     * Stretched to 100% with `auto` layout, a five-column Rushing table and an
+     * eight-column Defensive table put their columns in completely different
+     * places, and a career reads as a stack of unrelated tables rather than one
+     * record. Fixed widths mean every category starts at the same left edge and
+     * marches at the same pitch; a shorter category simply ends sooner.
+     */
+    .alm-career .alm-table {
+        width: auto;
+        table-layout: fixed;
+    }
+
+    .alm-career .alm-table th,
+    .alm-career .alm-table td {
+        width: 5.5rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .alm-career .alm-table th:first-child,
+    .alm-career .alm-table td:first-child {
+        width: 5rem;
+    }
+
+    .alm-career .alm-table th:nth-child(2),
+    .alm-career .alm-table td:nth-child(2) {
+        width: 10rem;
+    }
+
+    .alm-career h4 {
+        margin: 1rem 0 .35rem;
+    }
+
     .alm-num {
         color: var(--c-text-muted);
         font-variant-numeric: tabular-nums;
@@ -211,21 +258,61 @@
         white-space: nowrap;
     }
 
+    /*
+     * 🚨 The filter bar styles its OWN controls, and has to.
+     *
+     * Convoro's front end ships no shared class for an input or a select — the
+     * core templates use bare elements — so a filter bar that set only its
+     * labels got browser-default controls at three different heights sitting on
+     * three different baselines. Each field is a column, every control is the
+     * same height, and the button sits on the same line as the boxes.
+     */
     .alm-filters {
         display: flex;
         flex-wrap: wrap;
-        gap: .5rem;
-        align-items: flex-end;
+        gap: .6rem .75rem;
+        align-items: end;
         margin-bottom: 1rem;
     }
 
+    .alm-filters > div {
+        display: flex;
+        flex-direction: column;
+        gap: .25rem;
+        min-width: 0;
+    }
+
     .alm-filters label {
-        display: block;
         font-size: .72rem;
         text-transform: uppercase;
         letter-spacing: .04em;
         color: var(--c-text-muted);
-        margin-bottom: .2rem;
+    }
+
+    .alm-filters select,
+    .alm-filters input {
+        height: 2.25rem;
+        padding: 0 .55rem;
+        border: 1px solid var(--c-border);
+        border-radius: 8px;
+        background: var(--c-surface);
+        color: var(--c-text);
+        font: inherit;
+        font-size: .9rem;
+        min-width: 8rem;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .alm-filters select:focus,
+    .alm-filters input:focus {
+        outline: 2px solid var(--c-primary);
+        outline-offset: -1px;
+    }
+
+    /* The submit sits with the boxes rather than below them. */
+    .alm-filters button {
+        height: 2.25rem;
     }
 
     .alm-pager {

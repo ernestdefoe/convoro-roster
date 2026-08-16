@@ -191,6 +191,17 @@ final class Sync
             $steps[] = ['kind' => 'stats', 'year' => $season, 'category' => $category];
         }
 
+        /*
+         * 🚨 BOTH cycles, and the current one first.
+         *
+         * CFBD stamps a portal entry with the season the player is transferring
+         * INTO, so during the 2026 season the entries that exist are 2026's.
+         * Asking only for `$season + 1` fetched a cycle that has not opened yet
+         * and stored nothing, which rendered as a portal page headed "2027" and
+         * showing nothing at all — a page that looks broken while the sync
+         * reports success.
+         */
+        $steps[] = ['kind' => 'portal', 'year' => $season];
         $steps[] = ['kind' => 'portal', 'year' => $season + 1];
 
         if ($this->settings->gameLogs()) {

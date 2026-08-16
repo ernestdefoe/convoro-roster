@@ -132,6 +132,14 @@ return [
     /* ------------------------------------------------------------ admin */
 
     'admin.intro' => 'Almanac mirrors CollegeFootballData on a schedule. Nothing is fetched while somebody is looking at a page.',
+
+    'admin.heading_switch' => 'Almanac',
+    'admin.heading_api' => 'CollegeFootballData',
+    'admin.heading_scope' => 'How much to carry',
+    'admin.heading_budget' => 'Spending',
+    'admin.heading_restart' => 'Start again',
+    'admin.unchanged' => 'A key is stored. Leave blank to keep it.',
+
     'admin.enabled' => 'Switch Almanac on',
     'admin.enabled_note' => 'While this is off, every Almanac page answers as though it does not exist.',
     'admin.api_key' => 'CollegeFootballData API key',
@@ -153,21 +161,23 @@ return [
     'admin.refresh_days_note' => 'Once the first backfill is done, the daily tick does nothing until this much time has passed.',
 
     'admin.state' => 'What the last run did',
-    'admin.budget' => 'Calls left this month',
-    'admin.budget_unknown' => 'Not known until the next call.',
+    'admin.budget' => '{calls} calls left of this month’s allowance.',
+    'admin.budget_unknown' => 'How many calls are left is not known until the next one goes out.',
+    'admin.budget_note' => 'CollegeFootballData allows a thousand calls per calendar month on the free tier, and Picks draws on the same allowance.',
     'admin.progress' => 'Backfill progress',
     'admin.progress_working' => '{remaining} steps still to run.',
     'admin.progress_complete' => 'Up to date. The next refresh is due in {days} days.',
     'admin.never_run' => 'Has not run yet.',
     'admin.sync_now' => 'Run a sync now',
+    'admin.sync_now_note' => 'Queues one run rather than fetching here. A backfill is tens of calls and megabytes of JSON, which no web request should be holding open.',
     'admin.restart' => 'Start the backfill again',
     'admin.restart_note' => 'Walks the whole plan from the beginning. Nothing is deleted — every write is an upsert — so this costs calls and changes nothing else.',
     'admin.sync_queued' => 'A sync has been queued. It will run on the next tick of the worker.',
     'admin.counts' => 'What is stored',
-    'admin.count_teams' => 'Teams',
-    'admin.count_players' => 'Players',
-    'admin.count_recruits' => 'Recruits',
-    'admin.count_stats' => 'Season stat lines',
+    'admin.count_teams' => '{count} teams',
+    'admin.count_players' => '{count} players',
+    'admin.count_recruits' => '{count} recruits',
+    'admin.count_stats' => '{count} season stat lines',
 
     /*
      * 🚨 One line per status the sync can report, because "it did not work" is

@@ -181,7 +181,7 @@ final class Cfbd
                 'jersey' => $this->int($row['jersey'] ?? null),
                 'height' => $this->int($row['height'] ?? null),
                 'weight' => $this->int($row['weight'] ?? null),
-                'class_year' => $this->int($row['year'] ?? null),
+                'class_year' => $this->classYear($row['year'] ?? null),
                 'home_city' => $this->str($row['homeCity'] ?? null, 120),
                 'home_state' => $this->str($row['homeState'] ?? null, 16),
                 'home_country' => $this->str($row['homeCountry'] ?? null, 60),
@@ -629,6 +629,26 @@ final class Cfbd
     private function int(mixed $value): ?int
     {
         return $value === null || $value === '' ? null : (int) $value;
+    }
+
+    /**
+     * The class a player is in: freshman through super senior, 1 to 5.
+     *
+     * 🚨 **CFBD's roster `year` is not always the class.** On older rosters it
+     * carries the SEASON instead — a 2005 row comes back as `"year":2005` — and
+     * some current rows do the same. Stored straight into a `tinyint` that is
+     * an out-of-range error which fails the whole chunk, and stored into
+     * anything wider it is a roster listing people as being in their 2025th
+     * year.
+     *
+     * Anything outside 1-5 is not a class, so it is not recorded as one. The
+     * roster page prints nothing in that column rather than a wrong answer.
+     */
+    private function classYear(mixed $value): ?int
+    {
+        $year = $this->int($value);
+
+        return $year !== null && $year >= 1 && $year <= 5 ? $year : null;
     }
 
     /** CFBD sends ISO-8601 with a Z; MySQL wants a plain datetime. */

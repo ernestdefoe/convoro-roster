@@ -68,7 +68,8 @@
         <h2>{{ $player['name'] }}</h2>
 
         <div class="alm-hero-meta">
-            @notempty($player['jersey'])#{{ $player['jersey'] }} · @endnotempty
+            {# Null check, not @notempty — see the note on the roster table. #}
+            @if ($player['jersey'] !== null)#{{ $player['jersey'] }} · @endif
             @notempty($player['position']){{ $player['position'] }} · @endnotempty
             @notempty($classYear){{ __($classYear) }}@endnotempty
         </div>
@@ -139,7 +140,7 @@
 @endnotempty
 
 @notempty($career)
-<section class="alm-section">
+<section class="alm-section alm-career">
     <h3>@lang('almanac.career')</h3>
 
     @each ($columns as $category => $types)

@@ -113,7 +113,14 @@
             <tbody>
                 @each ($rows as $row)
                 <tr>
-                    <td class="alm-num">@notempty($row['jersey']){{ $row['jersey'] }}@endnotempty</td>
+                    {#
+                        🚨 A null check, NOT @notempty. Number 0 has been legal
+                        in college football since 2020 and is common now — AK
+                        Dear wears it for Alabama — and `0` is falsy in PHP, so
+                        @notempty renders an empty cell for a jersey the player
+                        genuinely has.
+                    #}
+                    <td class="alm-num">@if ($row['jersey'] !== null){{ $row['jersey'] }}@endif</td>
                     <td><a href="/almanac/player/{{ $row['slug'] }}">{{ $row['name'] }}</a></td>
                     <td>{{ $row['position'] }}</td>
                     <td>
