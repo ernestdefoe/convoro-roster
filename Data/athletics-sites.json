@@ -1,0 +1,940 @@
+[
+ {
+  "cfbd_id": 2005,
+  "school": "Air Force",
+  "domain": "goairforcefalcons.com",
+  "platform": "sidearm",
+  "sport_id": 4
+ },
+ {
+  "cfbd_id": 2006,
+  "school": "Akron",
+  "domain": "gozips.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 333,
+  "school": "Alabama",
+  "domain": "rolltide.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 2026,
+  "school": "App State",
+  "domain": "appstatesports.com",
+  "platform": "classic",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 12,
+  "school": "Arizona",
+  "domain": "arizonawildcats.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 9,
+  "school": "Arizona State",
+  "domain": "thesundevils.com",
+  "platform": "wmt",
+  "sport_id": 5
+ },
+ {
+  "cfbd_id": 2032,
+  "school": "Arkansas State",
+  "domain": "asuindians.com",
+  "platform": "classic",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 349,
+  "school": "Army",
+  "domain": "goarmywestpoint.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 2,
+  "school": "Auburn",
+  "domain": "auburntigers.com",
+  "platform": "wmt",
+  "sport_id": 6
+ },
+ {
+  "cfbd_id": 252,
+  "school": "BYU",
+  "domain": "byucougars.com",
+  "platform": "wmt",
+  "sport_id": 4
+ },
+ {
+  "cfbd_id": 2050,
+  "school": "Ball State",
+  "domain": "ballstatesports.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 239,
+  "school": "Baylor",
+  "domain": "baylorbears.com",
+  "platform": "sidearm",
+  "sport_id": 4
+ },
+ {
+  "cfbd_id": 68,
+  "school": "Boise State",
+  "domain": "broncosports.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 103,
+  "school": "Boston College",
+  "domain": "bceagles.com",
+  "platform": "sidearm",
+  "sport_id": 4
+ },
+ {
+  "cfbd_id": 189,
+  "school": "Bowling Green",
+  "domain": "bgsufalcons.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 2084,
+  "school": "Buffalo",
+  "domain": "ubbulls.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 25,
+  "school": "California",
+  "domain": "calbears.com",
+  "platform": "classic",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 2117,
+  "school": "Central Michigan",
+  "domain": "cmuchippewas.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 2429,
+  "school": "Charlotte",
+  "domain": "charlotte49ers.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 2132,
+  "school": "Cincinnati",
+  "domain": "gobearcats.com",
+  "platform": "wmt",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 228,
+  "school": "Clemson",
+  "domain": "clemsontigers.com",
+  "platform": "wmt",
+  "sport_id": 20
+ },
+ {
+  "cfbd_id": 324,
+  "school": "Coastal Carolina",
+  "domain": "goccusports.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 38,
+  "school": "Colorado",
+  "domain": "cubuffs.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 36,
+  "school": "Colorado State",
+  "domain": "csurams.com",
+  "platform": "sidearm",
+  "sport_id": 1
+ },
+ {
+  "cfbd_id": 48,
+  "school": "Delaware",
+  "domain": "bluehens.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 150,
+  "school": "Duke",
+  "domain": "goduke.com",
+  "platform": "sidearm",
+  "sport_id": 5
+ },
+ {
+  "cfbd_id": 151,
+  "school": "East Carolina",
+  "domain": "ecupirates.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 2199,
+  "school": "Eastern Michigan",
+  "domain": "emueagles.com",
+  "platform": "sidearm",
+  "sport_id": 7
+ },
+ {
+  "cfbd_id": 57,
+  "school": "Florida",
+  "domain": "floridagators.com",
+  "platform": "sidearm",
+  "sport_id": 24
+ },
+ {
+  "cfbd_id": 2226,
+  "school": "Florida Atlantic",
+  "domain": "fausports.com",
+  "platform": "sidearm",
+  "sport_id": 5
+ },
+ {
+  "cfbd_id": 2229,
+  "school": "Florida International",
+  "domain": "fiusports.com",
+  "platform": "classic",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 52,
+  "school": "Florida State",
+  "domain": "seminoles.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 278,
+  "school": "Fresno State",
+  "domain": "gobulldogs.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 61,
+  "school": "Georgia",
+  "domain": "georgiadogs.com",
+  "platform": "sidearm",
+  "sport_id": 4
+ },
+ {
+  "cfbd_id": 290,
+  "school": "Georgia Southern",
+  "domain": "gseagles.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 2247,
+  "school": "Georgia State",
+  "domain": "georgiastatesports.com",
+  "platform": "classic",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 62,
+  "school": "Hawai'i",
+  "domain": "hawaiiathletics.com",
+  "platform": "classic",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 248,
+  "school": "Houston",
+  "domain": "uhcougars.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 356,
+  "school": "Illinois",
+  "domain": "fightingillini.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 84,
+  "school": "Indiana",
+  "domain": "iuhoosiers.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 2294,
+  "school": "Iowa",
+  "domain": "hawkeyesports.com",
+  "platform": "wmt",
+  "sport_id": 6
+ },
+ {
+  "cfbd_id": 66,
+  "school": "Iowa State",
+  "domain": "cyclones.com",
+  "platform": "sidearm",
+  "sport_id": 1
+ },
+ {
+  "cfbd_id": 55,
+  "school": "Jacksonville State",
+  "domain": "jaxstatesports.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 256,
+  "school": "James Madison",
+  "domain": "jmusports.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 2305,
+  "school": "Kansas",
+  "domain": "kuathletics.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 2306,
+  "school": "Kansas State",
+  "domain": "kstatesports.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 338,
+  "school": "Kennesaw State",
+  "domain": "ksuowls.com",
+  "platform": "classic",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 2309,
+  "school": "Kent State",
+  "domain": "kentstatesports.com",
+  "platform": "sidearm",
+  "sport_id": 4
+ },
+ {
+  "cfbd_id": 96,
+  "school": "Kentucky",
+  "domain": "ukathletics.com",
+  "platform": "wpx",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 99,
+  "school": "LSU",
+  "domain": "lsusports.net",
+  "platform": "wmt",
+  "sport_id": 22
+ },
+ {
+  "cfbd_id": 2335,
+  "school": "Liberty",
+  "domain": "libertyflames.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 309,
+  "school": "Louisiana",
+  "domain": "ragincajuns.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 2348,
+  "school": "Louisiana Tech",
+  "domain": "latechsports.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 97,
+  "school": "Louisville",
+  "domain": "gocards.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 276,
+  "school": "Marshall",
+  "domain": "herdzone.com",
+  "platform": "sidearm",
+  "sport_id": 4
+ },
+ {
+  "cfbd_id": 120,
+  "school": "Maryland",
+  "domain": "umterps.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 113,
+  "school": "Massachusetts",
+  "domain": "umassathletics.com",
+  "platform": "sidearm",
+  "sport_id": 4
+ },
+ {
+  "cfbd_id": 235,
+  "school": "Memphis",
+  "domain": "gotigersgo.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 2390,
+  "school": "Miami",
+  "domain": "hurricanesports.com",
+  "platform": "wpx",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 193,
+  "school": "Miami (OH)",
+  "domain": "miamiredhawks.com",
+  "platform": "sidearm",
+  "sport_id": 4
+ },
+ {
+  "cfbd_id": 130,
+  "school": "Michigan",
+  "domain": "mgoblue.com",
+  "platform": "sidearm",
+  "sport_id": 4
+ },
+ {
+  "cfbd_id": 127,
+  "school": "Michigan State",
+  "domain": "msuspartans.com",
+  "platform": "sidearm",
+  "sport_id": 4
+ },
+ {
+  "cfbd_id": 2393,
+  "school": "Middle Tennessee",
+  "domain": "goblueraiders.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 135,
+  "school": "Minnesota",
+  "domain": "gophersports.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 344,
+  "school": "Mississippi State",
+  "domain": "hailstate.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 142,
+  "school": "Missouri",
+  "domain": "mutigers.com",
+  "platform": "wmt",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 2623,
+  "school": "Missouri State",
+  "domain": "missouristatebears.com",
+  "platform": "sidearm",
+  "sport_id": 4
+ },
+ {
+  "cfbd_id": 152,
+  "school": "NC State",
+  "domain": "gopack.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 2426,
+  "school": "Navy",
+  "domain": "navysports.com",
+  "platform": "classic",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 158,
+  "school": "Nebraska",
+  "domain": "huskers.com",
+  "platform": "wmt",
+  "sport_id": 5
+ },
+ {
+  "cfbd_id": 2440,
+  "school": "Nevada",
+  "domain": "nevadawolfpack.com",
+  "platform": "classic",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 167,
+  "school": "New Mexico",
+  "domain": "golobos.com",
+  "platform": "wmt",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 166,
+  "school": "New Mexico State",
+  "domain": "nmstatesports.com",
+  "platform": "classic",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 153,
+  "school": "North Carolina",
+  "domain": "goheels.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 2449,
+  "school": "North Dakota State",
+  "domain": "gobison.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 249,
+  "school": "North Texas",
+  "domain": "meangreensports.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 2459,
+  "school": "Northern Illinois",
+  "domain": "niuhuskies.com",
+  "platform": "classic",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 77,
+  "school": "Northwestern",
+  "domain": "nusports.com",
+  "platform": "wmt",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 87,
+  "school": "Notre Dame",
+  "domain": "und.com",
+  "platform": "wmt",
+  "sport_id": 8
+ },
+ {
+  "cfbd_id": 195,
+  "school": "Ohio",
+  "domain": "ohiobobcats.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 194,
+  "school": "Ohio State",
+  "domain": "ohiostatebuckeyes.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 201,
+  "school": "Oklahoma",
+  "domain": "soonersports.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 197,
+  "school": "Oklahoma State",
+  "domain": "okstate.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 295,
+  "school": "Old Dominion",
+  "domain": "odusports.com",
+  "platform": "wmt",
+  "sport_id": 16
+ },
+ {
+  "cfbd_id": 145,
+  "school": "Ole Miss",
+  "domain": "olemisssports.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 2483,
+  "school": "Oregon",
+  "domain": "goducks.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 204,
+  "school": "Oregon State",
+  "domain": "osubeavers.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 213,
+  "school": "Penn State",
+  "domain": "gopsusports.com",
+  "platform": "wmt",
+  "sport_id": 5
+ },
+ {
+  "cfbd_id": 221,
+  "school": "Pittsburgh",
+  "domain": "pittsburghpanthers.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 2509,
+  "school": "Purdue",
+  "domain": "purduesports.com",
+  "platform": "wmt",
+  "sport_id": 6
+ },
+ {
+  "cfbd_id": 242,
+  "school": "Rice",
+  "domain": "riceowls.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 164,
+  "school": "Rutgers",
+  "domain": "scarletknights.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 2567,
+  "school": "SMU",
+  "domain": "smumustangs.com",
+  "platform": "classic",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 16,
+  "school": "Sacramento State",
+  "domain": "hornetsports.com",
+  "platform": "classic",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 2534,
+  "school": "Sam Houston",
+  "domain": "gobearkats.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 21,
+  "school": "San Diego State",
+  "domain": "goaztecs.com",
+  "platform": "wmt",
+  "sport_id": 5
+ },
+ {
+  "cfbd_id": 23,
+  "school": "San Jos\u00e9 State",
+  "domain": "sjsuspartans.com",
+  "platform": "wmt",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 6,
+  "school": "South Alabama",
+  "domain": "usajaguars.com",
+  "platform": "classic",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 2579,
+  "school": "South Carolina",
+  "domain": "gamecocksonline.com",
+  "platform": "wpx",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 58,
+  "school": "South Florida",
+  "domain": "gousfbulls.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 2572,
+  "school": "Southern Miss",
+  "domain": "southernmiss.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 24,
+  "school": "Stanford",
+  "domain": "gostanford.com",
+  "platform": "wmt",
+  "sport_id": 8
+ },
+ {
+  "cfbd_id": 183,
+  "school": "Syracuse",
+  "domain": "cuse.com",
+  "platform": "sidearm",
+  "sport_id": 8
+ },
+ {
+  "cfbd_id": 2628,
+  "school": "TCU",
+  "domain": "gofrogs.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 218,
+  "school": "Temple",
+  "domain": "owlsports.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 2633,
+  "school": "Tennessee",
+  "domain": "utsports.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 251,
+  "school": "Texas",
+  "domain": "texassports.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 245,
+  "school": "Texas A&M",
+  "domain": "12thman.com",
+  "platform": "wmt",
+  "sport_id": 4
+ },
+ {
+  "cfbd_id": 326,
+  "school": "Texas State",
+  "domain": "txstatebobcats.com",
+  "platform": "classic",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 2641,
+  "school": "Texas Tech",
+  "domain": "texastech.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 2649,
+  "school": "Toledo",
+  "domain": "utrockets.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 2653,
+  "school": "Troy",
+  "domain": "troytrojans.com",
+  "platform": "sidearm",
+  "sport_id": 4
+ },
+ {
+  "cfbd_id": 2655,
+  "school": "Tulane",
+  "domain": "tulanegreenwave.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 202,
+  "school": "Tulsa",
+  "domain": "tulsahurricane.com",
+  "platform": "sidearm",
+  "sport_id": 1
+ },
+ {
+  "cfbd_id": 5,
+  "school": "UAB",
+  "domain": "uabsports.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 2116,
+  "school": "UCF",
+  "domain": "ucfknights.com",
+  "platform": "wmt",
+  "sport_id": 5
+ },
+ {
+  "cfbd_id": 26,
+  "school": "UCLA",
+  "domain": "uclabruins.com",
+  "platform": "wmt",
+  "sport_id": 5
+ },
+ {
+  "cfbd_id": 41,
+  "school": "UConn",
+  "domain": "uconnhuskies.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 2433,
+  "school": "UL Monroe",
+  "domain": "ulmwarhawks.com",
+  "platform": "classic",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 2439,
+  "school": "UNLV",
+  "domain": "unlvrebels.com",
+  "platform": "classic",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 30,
+  "school": "USC",
+  "domain": "usctrojans.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 2638,
+  "school": "UTEP",
+  "domain": "utepminers.com",
+  "platform": "classic",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 2636,
+  "school": "UTSA",
+  "domain": "goutsa.com",
+  "platform": "wmt",
+  "sport_id": 4
+ },
+ {
+  "cfbd_id": 254,
+  "school": "Utah",
+  "domain": "utahutes.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 238,
+  "school": "Vanderbilt",
+  "domain": "vucommodores.com",
+  "platform": "wmt",
+  "sport_id": 19
+ },
+ {
+  "cfbd_id": 258,
+  "school": "Virginia",
+  "domain": "virginiasports.com",
+  "platform": "wmt",
+  "sport_id": 27
+ },
+ {
+  "cfbd_id": 259,
+  "school": "Virginia Tech",
+  "domain": "hokiesports.com",
+  "platform": "wmt",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 154,
+  "school": "Wake Forest",
+  "domain": "godeacs.com",
+  "platform": "sidearm",
+  "sport_id": 4
+ },
+ {
+  "cfbd_id": 264,
+  "school": "Washington",
+  "domain": "gohuskies.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 265,
+  "school": "Washington State",
+  "domain": "wsucougars.com",
+  "platform": "wmt",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 277,
+  "school": "West Virginia",
+  "domain": "wvusports.com",
+  "platform": "sidearm",
+  "sport_id": 2
+ },
+ {
+  "cfbd_id": 98,
+  "school": "Western Kentucky",
+  "domain": "wkusports.com",
+  "platform": "sidearm",
+  "sport_id": 3
+ },
+ {
+  "cfbd_id": 2711,
+  "school": "Western Michigan",
+  "domain": "wmubroncos.com",
+  "platform": "classic",
+  "sport_id": 0
+ },
+ {
+  "cfbd_id": 275,
+  "school": "Wisconsin",
+  "domain": "uwbadgers.com",
+  "platform": "sidearm",
+  "sport_id": 1
+ }
+]

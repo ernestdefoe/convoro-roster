@@ -52,8 +52,54 @@ server. Only the `site.web.api` athlete endpoints answer. Scraping 130 school
 athletics sites instead would mean 130 parsers that break every August, when one
 CFBD call returns every roster in the country.
 
-ESPN is still used for one thing: **headshots**. CFBD's player ids *are* ESPN
-athlete ids, so `a.espncdn.com/i/headshots/...` resolves directly.
+ESPN is still used as the fallback for **headshots**. CFBD's player ids *are*
+ESPN athlete ids, so `a.espncdn.com/i/headshots/...` resolves directly.
+
+## Photographs, from the schools themselves
+
+ESPN has no picture for a great many real athletes, and almost never for a true
+freshman — the player this whole extension exists to make worth looking up. His
+school photographed him in June.
+
+So Almanac also reads each school's own roster and stores the photograph it
+finds. **This spends no CollegeFootballData calls** — the athletics sites are a
+separate provider — so it keeps running on its own cadence while the CFBD mirror
+sits idle, a dozen schools a day by default.
+
+🚨 **A face is never guessed.** Where a name matches two players and the jersey
+cannot separate them — brothers, and it is not rare — neither gets the photo. A
+page with no picture is honest; a page with his brother's face on it is wrong in
+a way nothing on screen reveals.
+
+Almanac ships a catalogue of **134 of the 138 FBS athletics sites**, each one
+verified by checking that the roster it serves is the roster Almanac already
+holds for that school. That check matters: athletics-site domains are nicknames
+(`rolltide.com`, `ramblinwreck.com`) that no provider carries, and the obvious
+way to find them — the football article's external links — is full of citations
+to the *opponent's* site. Four schools are unresolved (Arkansas, Georgia Tech,
+Utah State, Wyoming); their players fall back to ESPN until somebody fills the
+domain in.
+
+**Admin → Almanac** lists every school with the site it reads. A domain typed in
+there is kept as yours and is never overwritten by an update.
+
+### The four platforms
+
+Athletics departments are mid-migration between four site builds, and the
+platform decides which endpoint answers:
+
+| Platform  | How it answers | Schools |
+| --------- | -------------- | ------- |
+| `sidearm` | `/api/v2/sports` → `/api/v2/Rosters?sportId=N` | 86 |
+| `wmt`     | `/website-api/sports` → `/website-api/player-rosters` | 26 |
+| `classic` | the older server-rendered SIDEARM page | 19 |
+| `wpx`     | a WordPress build; players keyed off the photo's `title` | 3 |
+
+🚨 The two HTML readers depend on markup nobody owes Almanac, and August is when
+athletics sites get rebuilt. Both return **nothing** rather than nonsense when
+the shape changes, and a school that returns nothing keeps the photographs it
+already had — so the failure mode is staleness the admin screen can show, not a
+roster of wrong faces.
 
 ## Setup
 

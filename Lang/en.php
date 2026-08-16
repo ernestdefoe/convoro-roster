@@ -179,6 +179,31 @@ return [
     'admin.count_recruits' => '{count} recruits',
     'admin.count_stats' => '{count} season stat lines',
 
+    /* Photographs, from the schools' own sites. */
+    'admin.heading_photos' => 'Player photographs',
+    'admin.photos_note' => 'Almanac uses each school’s own roster photograph where it can find one, and falls back to ESPN. The schools’ sites are free to read, so none of this touches the CollegeFootballData allowance.',
+    'admin.photos' => 'Use the schools’ photographs',
+    'admin.photos_enabled_note' => 'Turn this off and player pages fall back to ESPN headshots, which are missing for a great many players and almost every freshman.',
+    'admin.photos_coverage' => '{covered} of {current} current players have their school’s photograph.',
+    'admin.photos_missing' => '{count} schools have no athletics site set, so their players fall back to ESPN. Set one below.',
+    'admin.photo_teams' => 'Schools per run',
+    'admin.photo_teams_note' => 'How many rosters to read on each daily tick. Schools come round in order of when they were last read.',
+    'admin.photo_days' => 'Days before a school is due again',
+    'admin.photo_days_note' => 'Roster photographs are taken once a year, so there is little to gain from reading a school more often than this.',
+    'admin.photos_now' => 'Read the next schools now',
+
+    'admin.heading_sites' => 'Where each school publishes',
+    'admin.sites_note' => 'Almanac ships with these, verified school by school. A domain typed in here is kept as yours and is never overwritten by an update. Clear one to hand it back to the shipped list. The platform is which kind of site it is — leave it as it is unless a school has rebuilt.',
+    'admin.site_school' => 'School',
+    'admin.site_domain' => 'Athletics site',
+    'admin.site_platform' => 'Platform',
+    'admin.site_sport' => 'Sport id',
+    'admin.site_last' => 'Last read',
+    'admin.site_never' => 'Not read yet',
+    'admin.site_found' => '{count} photographs',
+    'admin.site_saved' => 'Saved. That school will be read on the next run.',
+    'admin.site_rejected' => 'That does not look like a domain and a platform, so nothing was changed.',
+
     /*
      * 🚨 One line per status the sync can report, because "it did not work" is
      * not something anybody can act on. Each of these says what to do next.

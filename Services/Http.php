@@ -42,6 +42,13 @@ class Http
     private const READ_TIMEOUT = 45;
 
     /**
+     * The most a public page may hand back. Roster pages run to four
+     * megabytes on the sites that render them server-side, so this is
+     * generous; it is here to bound the worst case, not the normal one.
+     */
+    private const MAX_PAGE = 8 * 1024 * 1024;
+
+    /**
      * A GET, as a decoded JSON body plus the headers.
      *
      * @param array<string, string|int> $query
@@ -113,6 +120,85 @@ class Http
         $decoded = json_decode((string) $raw, true);
 
         return [$status, is_array($decoded) ? $decoded : [], $received];
+    }
+
+    /**
+     * A GET of a PUBLIC page, as a raw string.
+     *
+     * For the athletics sites, which are a different kind of request from
+     * CollegeFootballData's and are treated differently in two ways:
+     *
+     * 🚨 **Redirects are followed here, and they must be.** Half the athletics
+     * departments publish under one domain and serve from another —
+     * hurricanesports.com answers as miamihurricanes.com — so refusing to
+     * follow would read as "Miami has no roster". That is only safe because
+     * NOTHING IS SENT: no key, no cookie, no custom header. The rule on
+     * `getJson()` exists because that request carries a credential, and a
+     * credential must never be handed to whatever a parking page points at.
+     *
+     * The hop count is small on purpose: a redirect loop is a site that is
+     * broken today, not something to spend a worker on.
+     *
+     * @return array{0: int, 1: string} status, body. 0 means nobody answered.
+     */
+    public function getPage(string $url): array
+    {
+        if (!$this->usable() || !preg_match('#^https://#i', $url)) {
+            return [0, ''];
+        }
+
+        $handle = curl_init($url);
+
+        if ($handle === false) {
+            return [0, ''];
+        }
+
+        curl_setopt_array($handle, [
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => self::CONNECT_TIMEOUT,
+            CURLOPT_TIMEOUT => self::READ_TIMEOUT,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 3,
+
+            /*
+             * A roster page is a megabyte and some are four. Bounded so a
+             * misconfigured site streaming forever cannot hold a worker until
+             * the read timeout, and so nothing can hand this process more than
+             * it agreed to read.
+             */
+            CURLOPT_BUFFERSIZE => 65536,
+            CURLOPT_NOPROGRESS => false,
+            CURLOPT_PROGRESSFUNCTION => static fn ($handle, $expected, $downloaded): int
+                => $downloaded > self::MAX_PAGE ? 1 : 0,
+
+            /*
+             * Several departments answer a bare client with a challenge page,
+             * so the request identifies itself as what it is. Not a
+             * credential — there is nothing here another visitor could not see.
+             */
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (compatible; ConvoroAlmanac/1.0; +https://convoro.co)',
+            CURLOPT_HTTPHEADER => ['Accept: text/html,application/json'],
+        ]);
+
+        /*
+         * 🚨 A redirect may only ever go to another https URL, and the option
+         * that says so is spelt differently depending on how old the curl this
+         * site was built against is. Convoro supports PHP 8.3 and libcurl 7.85
+         * is not guaranteed there, so the constant is checked rather than
+         * assumed — setting an undefined one is a warning and no restriction at
+         * all, which is the failure this guards against.
+         */
+        if (defined('CURLOPT_REDIR_PROTOCOLS_STR')) {
+            curl_setopt($handle, CURLOPT_REDIR_PROTOCOLS_STR, 'https');
+        } elseif (defined('CURLPROTO_HTTPS')) {
+            curl_setopt($handle, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTPS);
+        }
+
+        $raw = curl_exec($handle);
+        $status = (int) curl_getinfo($handle, CURLINFO_RESPONSE_CODE);
+
+        return $raw === false ? [0, ''] : [$status, (string) $raw];
     }
 
     public function usable(): bool

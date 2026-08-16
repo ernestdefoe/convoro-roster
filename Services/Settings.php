@@ -86,6 +86,28 @@ class Settings
          */
         'almanac_refresh_days' => '7',
 
+        /*
+         * Photographs from the schools' own sites.
+         *
+         * 🚨 A SEPARATE provider from CollegeFootballData, with its own
+         * cadence and its own cap, because it draws on no shared allowance —
+         * the athletics departments' sites are free to read. Tying this to the
+         * CFBD budget would mean a site that had spent its month showing no
+         * faces, for no reason at all.
+         */
+        'almanac_photos' => '1',
+
+        /*
+         * Schools read per tick. The tick is daily, so twelve walks every FBS
+         * programme in under a fortnight while costing about twelve requests a
+         * day — small enough that no department would notice, and the cycle is
+         * far faster than roster photographs actually change.
+         */
+        'almanac_photo_teams' => '12',
+
+        /* Days before a school is due again. */
+        'almanac_photo_days' => '14',
+
         /* What the last run wrote down, for the admin screen and the pages. */
         'almanac_sync_status' => '',
         'almanac_sync_error' => '',
@@ -194,6 +216,21 @@ class Settings
     public function refreshDays(): int
     {
         return max(1, min(60, (int) $this->get('almanac_refresh_days') ?: 7));
+    }
+
+    public function photosEnabled(): bool
+    {
+        return $this->get('almanac_photos') === '1';
+    }
+
+    public function photoTeams(): int
+    {
+        return max(1, min(140, (int) $this->get('almanac_photo_teams') ?: 12));
+    }
+
+    public function photoDays(): int
+    {
+        return max(1, min(180, (int) $this->get('almanac_photo_days') ?: 14));
     }
 
     /**

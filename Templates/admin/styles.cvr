@@ -1,0 +1,38 @@
+{#
+    The admin screen's own rules — only the athletics-site rows need any.
+
+    🚨 Every colour is a `--c-*` custom property. Convoro's prefix is `--c-`,
+    not the `--i-` an IPS habit reaches for, and a wrong prefix paints nothing,
+    which on a dark theme reads as white text on white.
+
+    Rows rather than a table, because each one is a form and a `<form>` inside a
+    `<tr>` is lifted straight back out by the parser. See index.cvr.
+#}
+<style>
+    .alm-site-row {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: .5rem;
+        padding: .45rem 0;
+        border-bottom: 1px solid var(--c-border);
+    }
+
+    /* Wide enough that the longest school name does not wrap the row. */
+    .alm-site-school {
+        flex: 0 0 12rem;
+        color: var(--c-text);
+        font-weight: 600;
+    }
+
+    .alm-site-sport {
+        width: 5.5rem;
+    }
+
+    /* Pushed right, so the eye runs down one column of states. */
+    .alm-site-state {
+        flex: 1 1 10rem;
+        color: var(--c-text-muted);
+        font-size: .85rem;
+    }
+</style>

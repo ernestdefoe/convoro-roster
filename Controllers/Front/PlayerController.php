@@ -53,7 +53,7 @@ final class PlayerController extends Controller
         return $this->render('almanac::front/player', [
             'user' => $this->user($request),
             'player' => $player,
-            'headshot' => $players->headshot($cfbdId),
+            'headshot' => $players->portrait($player),
             'height' => $players->height(isset($player['height']) ? (int) $player['height'] : null),
             'classYear' => $players->classYear(
                 isset($player['class_year']) ? (int) $player['class_year'] : null,

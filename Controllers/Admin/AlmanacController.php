@@ -47,6 +47,9 @@ final class AlmanacController extends Controller
             'remaining' => max(0, count($plan) - (int) ($cursor['i'] ?? 0)),
             'borrowed' => trim($settings->get('almanac_cfbd_key')) === '' && $settings->configured(),
             'counts' => $this->counts(),
+            'coverage' => $this->app->make('almanac.photos')->coverage(),
+            'sites' => $this->app->make('almanac.photos')->sites(),
+            'platforms' => \Convoro\Extensions\Almanac\Services\Athletics::PLATFORMS,
             'seo' => $this->seo($request)->title(__('almanac.admin_title')),
         ]);
     }
@@ -63,9 +66,48 @@ final class AlmanacController extends Controller
             'almanac_budget_reserve' => (string) $request->input('almanac_budget_reserve', '50'),
             'almanac_run_cap' => (string) $request->input('almanac_run_cap', '40'),
             'almanac_refresh_days' => (string) $request->input('almanac_refresh_days', '7'),
+            'almanac_photos' => $request->input('almanac_photos') === '1' ? '1' : '0',
+            'almanac_photo_teams' => (string) $request->input('almanac_photo_teams', '12'),
+            'almanac_photo_days' => (string) $request->input('almanac_photo_days', '14'),
         ]);
 
         return $this->ok($request, __('almanac.saved'));
+    }
+
+    /**
+     * Point one school at its athletics site, or clear it.
+     *
+     * 🚨 Saved as a MANUAL entry, which is what stops the shipped catalogue
+     * overwriting it on the next update. See Photos::seedCatalogue().
+     */
+    public function saveSite(Request $request): Response
+    {
+        $saved = $this->app->make('almanac.photos')->setSite(
+            (int) $request->input('team', 0),
+            (string) $request->input('domain', ''),
+            (string) $request->input('platform', ''),
+            (int) $request->input('sport_id', 0),
+        );
+
+        return $this->ok(
+            $request,
+            $saved ? __('almanac.admin.site_saved') : __('almanac.admin.site_rejected'),
+        );
+    }
+
+    /**
+     * Read the next few schools' rosters now rather than on the daily tick.
+     *
+     * 🚨 Queued, like every other outbound work here: a dozen roster pages is
+     * several megabytes of HTML, which is not something to do inside somebody's
+     * click. It rides the sync job, whose photo pass runs whatever the CFBD
+     * budget says — the schools' sites cost nothing.
+     */
+    public function photosNow(Request $request): Response
+    {
+        $this->app->make('queue')->push(Almanac::SYNC);
+
+        return $this->ok($request, __('almanac.admin.sync_queued'));
     }
 
     /**

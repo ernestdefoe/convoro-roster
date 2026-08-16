@@ -243,6 +243,28 @@ final class Players
         return $cfbdId > 0 ? sprintf(self::HEADSHOT, $cfbdId) : null;
     }
 
+    /**
+     * The best picture Almanac has of a player: his school's, then ESPN's.
+     *
+     * 🚨 The school's photograph wins whenever there is one, and it is worth
+     * being clear why, because ESPN's is the one that costs nothing to keep
+     * current. ESPN has no picture at all for a great many real athletes and
+     * almost never for a freshman — the player this extension exists to make
+     * worth looking up. The school photographed him in June.
+     *
+     * Still nullable, and the template still stacks it over the initials with
+     * `onerror`: a stored URL is a URL that resolved when the roster was read,
+     * not a promise about the moment somebody opens the page.
+     *
+     * @param array<string, mixed> $player
+     */
+    public function portrait(array $player): ?string
+    {
+        $own = trim((string) ($player['photo_url'] ?? ''));
+
+        return $own !== '' ? $own : $this->headshot((int) ($player['cfbd_id'] ?? 0));
+    }
+
     /** Feet and inches from the stored total. */
     public function height(?int $inches): ?string
     {

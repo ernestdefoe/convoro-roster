@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Convoro\Extensions\Almanac;
 
 use Convoro\Engine\Module\Module;
+use Convoro\Extensions\Almanac\Services\Athletics;
 use Convoro\Extensions\Almanac\Services\Budget;
 use Convoro\Extensions\Almanac\Services\Cfbd;
 use Convoro\Extensions\Almanac\Services\Http;
+use Convoro\Extensions\Almanac\Services\Photos;
 use Convoro\Extensions\Almanac\Services\Players;
 use Convoro\Extensions\Almanac\Services\Recruits;
 use Convoro\Extensions\Almanac\Services\Settings;
@@ -78,11 +80,27 @@ final class Almanac extends Module
             $this->app->make('almanac.budget'),
         ));
 
+        /*
+         * The schools' own rosters, read for the photograph on them. A
+         * different provider from CollegeFootballData with no shared
+         * allowance — see Services/Athletics.php.
+         */
+        $this->app->singleton('almanac.athletics', fn (): Athletics => new Athletics(
+            $this->app->make('almanac.http'),
+        ));
+
+        $this->app->singleton('almanac.photos', fn (): Photos => new Photos(
+            $db,
+            $this->app->make('almanac.athletics'),
+            $this->app->make('almanac.settings'),
+        ));
+
         $this->app->singleton('almanac.sync', fn (): Sync => new Sync(
             $this->app->make('almanac.cfbd'),
             $this->app->make('almanac.store'),
             $this->app->make('almanac.settings'),
             $this->app->make('almanac.budget'),
+            $this->app->make('almanac.photos'),
         ));
 
         /*

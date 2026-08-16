@@ -37,13 +37,14 @@ namespace Convoro\Extensions\Almanac\Services;
 final class Sync
 {
     /** Steps that cost no call and run at the end of every tick. */
-    private const FINALIZE = ['link_recruits', 'career_spans', 'forums'];
+    private const FINALIZE = ['link_recruits', 'career_spans', 'forums', 'sites'];
 
     public function __construct(
         private readonly Cfbd $cfbd,
         private readonly Store $store,
         private readonly Settings $settings,
         private readonly Budget $budget,
+        private readonly Photos $photos,
     ) {
     }
 
@@ -77,7 +78,21 @@ final class Sync
          * having touched nothing.
          */
         if ($mode === 'refresh' && (int) ($cursor['i'] ?? 0) === 0 && !$this->due($now)) {
-            return $this->finish('idle', '', $now, ['mode' => $mode]);
+            /*
+             * 🚨 The photographs still run on an idle tick, and this is the
+             * only place they can. Almost every tick returns HERE — that is the
+             * whole point of the idle path — so a photo pass sitting further
+             * down would run on a backfill, then once a week, then never again
+             * on a site that had finished syncing. They cost no CFBD calls, so
+             * "the mirror is up to date" says nothing about whether the schools
+             * have published this year's headshots.
+             */
+            $idlePhotos = $this->photos->run($now);
+
+            return $this->finish('idle', '', $now, [
+                'mode' => $mode,
+                'photos' => (int) ($idlePhotos['photos'] ?? 0),
+            ]);
         }
 
         $plan = $this->plan($mode, $now);
@@ -119,6 +134,20 @@ final class Sync
             $this->execute(['kind' => $step]);
         }
 
+        /*
+         * 🚨 The schools' photographs, and they run WHATEVER the budget said.
+         * They are a different provider — each department's own site, free to
+         * read — so a tick that stopped early because CollegeFootballData's
+         * monthly allowance ran low has no reason at all to stop reading them.
+         * Tying the two together would mean a site that spent its month on a
+         * backfill showing no faces until the first of the next one.
+         *
+         * Capped by a count of schools instead, and it never reports a fault:
+         * a department's website being down is not something to put on the
+         * Almanac's status line beside a mirror that synced perfectly well.
+         */
+        $photos = $this->photos->run($now);
+
         $complete = $index >= count($plan);
 
         if ($complete) {
@@ -146,6 +175,7 @@ final class Sync
             'calls' => $this->budget->spent(),
             'budget' => $this->budget->remaining(),
             'mode' => $mode,
+            'photos' => (int) ($photos['photos'] ?? 0),
         ]);
     }
 
@@ -406,6 +436,11 @@ final class Sync
 
             case 'forums':
                 $this->store->resolveForums();
+
+                return '';
+
+            case 'sites':
+                $this->photos->seedCatalogue();
 
                 return '';
         }

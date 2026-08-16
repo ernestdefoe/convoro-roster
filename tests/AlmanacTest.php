@@ -22,9 +22,11 @@ declare(strict_types=1);
  */
 
 use Convoro\Engine\Convoro;
+use Convoro\Extensions\Almanac\Services\Athletics;
 use Convoro\Extensions\Almanac\Services\Budget;
 use Convoro\Extensions\Almanac\Services\Cfbd;
 use Convoro\Extensions\Almanac\Services\Http;
+use Convoro\Extensions\Almanac\Services\Photos;
 use Convoro\Extensions\Almanac\Services\Players;
 use Convoro\Extensions\Almanac\Services\Settings;
 use Convoro\Extensions\Almanac\Services\Store;
@@ -62,6 +64,64 @@ if (!class_exists('AlmanacScriptedHttp')) {
             $this->asked[] = $url . ($query === [] ? '' : '?' . http_build_query($query));
 
             return array_shift($this->answers) ?? [200, [], []];
+        }
+
+        /**
+         * The athletics sites, answered from a map of URL fragment => body.
+         *
+         * Keyed on a fragment rather than the whole URL because the readers
+         * build query strings themselves, and a test that pinned the exact
+         * string would be asserting the encoding rather than the behaviour.
+         *
+         * @var array<string, array{0: int, 1: string}>
+         */
+        public array $pages = [];
+
+        public function getPage(string $url): array
+        {
+            $this->asked[] = $url;
+
+            foreach ($this->pages as $fragment => $answer) {
+                if (str_contains($url, $fragment)) {
+                    return $answer;
+                }
+            }
+
+            return [404, ''];
+        }
+    }
+}
+
+/**
+ * A Photos that records instead of fetching.
+ *
+ * 🚨 The reason `Photos` is not final: the suite runs against the site's own
+ * database, so driving the real one through `Sync` would read live rosters off
+ * the internet and stamp live rows.
+ */
+if (!class_exists('AlmanacSpyPhotos')) {
+    class AlmanacSpyPhotos extends \Convoro\Extensions\Almanac\Services\Photos
+    {
+        public int $runs = 0;
+
+        public int $seeds = 0;
+
+        public function __construct()
+        {
+        }
+
+        public function run(?int $now = null): array
+        {
+            $this->runs++;
+
+            return ['status' => 'ran', 'schools' => 0, 'photos' => 0];
+        }
+
+        public function seedCatalogue(): int
+        {
+            $this->seeds++;
+
+            return 0;
         }
     }
 }
@@ -432,6 +492,7 @@ return [
             new Store($db),
             $settings,
             new Budget($settings),
+            new AlmanacSpyPhotos(),
         );
 
         $plan = $sync->plan('backfill');
@@ -468,6 +529,7 @@ return [
             new Store($db),
             $settings,
             new Budget($settings),
+            new AlmanacSpyPhotos(),
         );
 
         $years = [];
@@ -498,6 +560,7 @@ return [
             new Store($db),
             $settings,
             new Budget($settings),
+            new AlmanacSpyPhotos(),
         );
 
         $years = [];
@@ -524,6 +587,7 @@ return [
             new Store($db),
             $settings,
             new Budget($settings),
+            new AlmanacSpyPhotos(),
         );
 
         $backfill = count(array_filter($sync->plan('backfill'), static fn (array $s): bool => $s['kind'] === 'game_stats'));
@@ -547,6 +611,22 @@ return [
             assertFalse(
                 str_contains($code, 'almanac.http') || str_contains($code, 'almanac.cfbd'),
                 basename($path) . ' can reach the provider from a request'
+            );
+
+            /*
+             * 🚨 The schools' sites cost no CFBD allowance, but they are still
+             * a fetch, and a roster page is megabytes of HTML. Reading a dozen
+             * of them inside somebody's click is the same mistake with a
+             * different provider. The admin screen may ask `Photos` what it
+             * already knows; it may not ask it to go and look.
+             */
+            assertFalse(
+                str_contains($code, 'almanac.athletics'),
+                basename($path) . ' can read an athletics site from a request'
+            );
+            assertFalse(
+                (bool) preg_match("/almanac\.photos'\s*\)\s*->\s*(run|apply)\s*\(/", $code),
+                basename($path) . ' reads rosters inside the request instead of queueing'
             );
             assertFalse(
                 (bool) preg_match('/\bcurl_\w+\s*\(/', $code),
@@ -586,6 +666,238 @@ return [
         assertSame('^1.5.0', $manifest['convoro'] ?? '', 'the core constraint no longer matches the seams used');
         assertTrue(str_contains($code, '$this->schedule()'), 'the seam that sets the floor is gone');
         assertTrue(str_contains($code, 'widget_sections'), 'the widget section registry is no longer used');
+    },
+
+    /* ============================================== THE PHOTOGRAPHS === */
+
+    'a name that matches two players gives neither of them a face' => static function () use ($db): void {
+        /*
+         * 🚨 The bug this whole matcher is shaped around. Brothers on one
+         * roster are not rare, and first initial plus surname cannot tell them
+         * apart — so where the jersey cannot settle it, nobody gets the photo.
+         * A player page with no picture is honest. A player page with his
+         * brother's face on it is wrong in a way nothing on the screen reveals,
+         * and the only person who would ever notice is the one it is about.
+         */
+        $photos = new Photos($db, new Athletics(new AlmanacScriptedHttp()), new AlmanacFakeSettings());
+
+        $squad = [
+            ['id' => 1, 'first_name' => 'Marcus', 'last_name' => 'Smith', 'name' => 'Marcus Smith', 'jersey' => 7],
+            ['id' => 2, 'first_name' => 'Malik', 'last_name' => 'Smith', 'name' => 'Malik Smith', 'jersey' => 22],
+            ['id' => 3, 'first_name' => 'Jaden', 'last_name' => 'Okafor', 'name' => 'Jaden Okafor', 'jersey' => 4],
+        ];
+
+        $ambiguous = $photos->pair(
+            [['first' => 'M', 'last' => 'Smith', 'jersey' => null, 'photo' => 'https://x/1.jpg']],
+            $squad,
+        );
+
+        assertSame([], $ambiguous, 'a photo was hung on one of two players who share a name');
+
+        $settled = $photos->pair(
+            [['first' => 'Marcus', 'last' => 'Smith', 'jersey' => 7, 'photo' => 'https://x/1.jpg']],
+            $squad,
+        );
+
+        assertSame([1 => 'https://x/1.jpg'], $settled, 'the jersey did not separate two players who share a name');
+
+        /* The ordinary case still has to work, spelling differences and all. */
+        $ordinary = $photos->pair(
+            [['first' => 'J.', 'last' => "O'Kafor Jr.", 'jersey' => null, 'photo' => 'https://x/3.jpg']],
+            $squad,
+        );
+
+        assertSame([3 => 'https://x/3.jpg'], $ordinary, 'a punctuated name stopped matching the same man');
+
+        /*
+         * 🚨 And a nickname printed inside the name still matches. Kentucky's
+         * roster carries `Elijah "Bo" Barnes` where CFBD has `Elijah Barnes`,
+         * and a key built from every word compares `bobarnes` to `barnes` and
+         * matches nobody — silently, for a whole school.
+         */
+        $nickname = $photos->pair(
+            [['first' => 'Elijah', 'last' => '"Bo" Barnes', 'jersey' => 0, 'photo' => 'https://x/4.jpg']],
+            [['id' => 4, 'first_name' => 'Elijah', 'last_name' => 'Barnes', 'name' => 'Elijah Barnes', 'jersey' => 0]],
+        );
+
+        assertSame([4 => 'https://x/4.jpg'], $nickname, 'a nickname in the name stopped him matching himself');
+    },
+
+    'a roster page nobody can parse any more returns nothing, not nonsense' => static function (): void {
+        /*
+         * 🚨 Two of the four readers are HTML parsers, against markup nobody
+         * owes Almanac, and August is when athletics sites get rebuilt. The
+         * failure has to be an EMPTY answer — which leaves every stored photo
+         * alone — rather than half-read names, which would hang faces on the
+         * wrong men and look like data.
+         */
+        $http = new AlmanacScriptedHttp();
+        $http->pages = ['/sports/football/roster' => [200, '<html><body><h1>Roster</h1><p>Coming soon</p></body></html>']];
+
+        $athletics = new Athletics($http);
+
+        [$classic, $classicError] = $athletics->roster('example.com', 'classic');
+        [$wpx, $wpxError] = $athletics->roster('example.com', 'wpx');
+
+        assertSame([], $classic, 'the classic reader invented players out of a page it did not understand');
+        assertSame([], $wpx, 'the WordPress reader invented players out of a page it did not understand');
+        assertTrue($classicError !== '' && $wpxError !== '', 'a page it cannot read was reported as a good read');
+    },
+
+    'a player with no photograph on his school page is not stored as one' => static function (): void {
+        $http = new AlmanacScriptedHttp();
+        $http->pages = [
+            '/api/v2/Rosters' => [200, json_encode(['items' => [['players' => [
+                ['firstName' => 'A', 'lastName' => 'Player', 'jerseyNumber' => '1',
+                 'image' => ['absoluteUrl' => 'https://school.test/a.jpg']],
+                ['firstName' => 'No', 'lastName' => 'Picture', 'jerseyNumber' => '2', 'image' => null],
+                ['firstName' => 'Blank', 'lastName' => 'Picture', 'jerseyNumber' => '3',
+                 'image' => ['absoluteUrl' => '']],
+            ]]]])],
+        ];
+
+        [$players, $error] = (new Athletics($http))->roster('school.test', 'sidearm', 3);
+
+        assertSame('', $error);
+        assertSame(1, count($players), 'a player with no photograph was kept as though he had one');
+        assertSame('https://school.test/a.jpg', $players[0]['photo']);
+    },
+
+    'the reader asks for every sport, not the first page of them' => static function (): void {
+        /*
+         * 🚨 The trap that made Clemson look like a school without football.
+         * Every list on that platform pages at fifteen and departments run
+         * twenty-odd sports, so the default page carries whichever ones sort
+         * first — and the reader concluded the site had no football at all.
+         */
+        $http = new AlmanacScriptedHttp();
+        $http->pages = [
+            '/website-api/sports' => [200, json_encode(['data' => [
+                ['id' => 20, 'name' => 'Football', 'slug' => 'football', 'default_roster_id' => 900],
+            ]])],
+            '/website-api/player-rosters' => [200, json_encode(['data' => [
+                ['jersey_number' => 5, 'player' => ['first_name' => 'A', 'last_name' => 'Player'],
+                 'photo' => ['url' => 'https://school.test/p.jpg']],
+            ]])],
+        ];
+
+        [$players, $error] = (new Athletics($http))->roster('school.test', 'wmt');
+
+        assertSame('', $error);
+        assertSame(1, count($players));
+
+        $sports = array_values(array_filter(
+            $http->asked,
+            static fn (string $url): bool => str_contains($url, '/website-api/sports'),
+        ));
+
+        assertTrue($sports !== [], 'the sports list was never asked for');
+        assertTrue(str_contains($sports[0], 'per_page=200'), 'only the first page of sports was asked for');
+
+        /*
+         * 🚨 And the roster comes from the SPORT'S own pointer. Picking the
+         * newest roster id instead lands on a signing class, which is also a
+         * roster and is created later than the season's.
+         */
+        $rosters = array_values(array_filter(
+            $http->asked,
+            static fn (string $url): bool => str_contains($url, 'player-rosters'),
+        ));
+
+        assertTrue(str_contains($rosters[0], '900'), 'the roster the sport points at was not the one read');
+    },
+
+    'photographs keep going when the CFBD budget has stopped' => static function () use ($db): void {
+        /*
+         * 🚨 They are a different provider — each school's own site, free to
+         * read — and almost every tick of this job returns down the idle path,
+         * because that is what an up-to-date mirror does. A photo pass that sat
+         * below the CFBD work would run during a backfill, then once a week,
+         * then never again on a site that had finished syncing.
+         */
+        $settings = new AlmanacFakeSettings(['season' => '2026', 'almanac_enabled' => '1']);
+        $settings->put('almanac_sync_cursor', json_encode(['mode' => 'refresh', 'i' => 0]));
+        $settings->put('almanac_sync_ok_at', (string) time());
+
+        $spy = new AlmanacSpyPhotos();
+        $sync = new Sync(
+            new Cfbd(new AlmanacScriptedHttp(), $settings, new Budget($settings)),
+            new Store($db),
+            $settings,
+            new Budget($settings),
+            $spy,
+        );
+
+        $result = $sync->run();
+
+        assertSame('idle', $result['status'], 'this test no longer exercises the idle path');
+        assertSame(1, $spy->runs, 'an idle tick skipped the photographs, so a finished site would never get any');
+    },
+
+    'the shipped catalogue is a catalogue' => static function () use ($root): void {
+        /*
+         * 130-odd hand-verified domains are data, and data rots quietly. This
+         * is the guard that a bad edit — a duplicate school, a platform that no
+         * reader answers to, a URL pasted where a host belongs — fails here
+         * rather than as a school whose photographs silently stop.
+         */
+        $rows = json_decode((string) file_get_contents($root . '/Data/athletics-sites.json'), true);
+
+        assertTrue(is_array($rows) && count($rows) > 120, 'the shipped catalogue is missing or has been emptied');
+
+        $seen = [];
+
+        foreach ($rows as $row) {
+            $school = (string) ($row['school'] ?? '?');
+
+            assertTrue(((int) ($row['cfbd_id'] ?? 0)) > 0, $school . ' has no provider id to match on');
+            assertFalse(isset($seen[$row['cfbd_id']]), $school . ' appears in the catalogue twice');
+            $seen[$row['cfbd_id']] = true;
+
+            assertTrue(
+                in_array($row['platform'] ?? '', Athletics::PLATFORMS, true),
+                $school . ' is on a platform no reader answers to: ' . ($row['platform'] ?? '')
+            );
+            assertTrue(
+                (bool) preg_match('/^[a-z0-9.-]+\.[a-z]{2,}$/', (string) ($row['domain'] ?? '')),
+                $school . ' has something that is not a bare host: ' . ($row['domain'] ?? '')
+            );
+        }
+    },
+
+    'an operator’s own domain is never overwritten by the shipped one' => static function () use ($root, $codeOf): void {
+        /*
+         * 🚨 The catalogue is a best effort at a hundred and thirty guessable
+         * domains; the operator is the one who KNOWS. Anybody whose correction
+         * was silently reverted by an update would, quite reasonably, never
+         * trust the field again.
+         */
+        $code = $codeOf($root . '/Services/Photos.php');
+
+        assertTrue(
+            str_contains($code, "`site_source` = 'catalogue' OR `site_domain` = ''"),
+            'the shipped catalogue can now overwrite a domain somebody typed in'
+        );
+        assertTrue(str_contains($code, "'manual'"), 'nothing marks a hand-set site as the operator’s own');
+    },
+
+    'the school’s photograph wins, and ESPN still fills the gap' => static function () use ($db): void {
+        $players = new Players($db);
+
+        assertSame(
+            'https://school.test/p.jpg',
+            $players->portrait(['cfbd_id' => 4685413, 'photo_url' => 'https://school.test/p.jpg']),
+            'ESPN was preferred over the school’s own photograph'
+        );
+        assertTrue(
+            str_contains((string) $players->portrait(['cfbd_id' => 4685413, 'photo_url' => '']), '4685413'),
+            'a player with no school photograph lost his ESPN one too'
+        );
+        assertSame(
+            null,
+            $players->portrait(['cfbd_id' => -1007404, 'photo_url' => null]),
+            'a synthesised id was given a photo URL that cannot resolve'
+        );
     },
 
     'the forum panel is gated on the viewer, not just on a forum existing' => static function () use ($root, $codeOf): void {

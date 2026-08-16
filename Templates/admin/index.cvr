@@ -3,6 +3,8 @@
 @section('title')@lang('almanac.admin_title')@endsection
 
 @section('content')
+@include('almanac::admin/styles')
+
 <div class="page-header">
     <div>
         <h2>@lang('almanac.admin_title')</h2>
@@ -135,6 +137,52 @@
         </div>
     </div>
 
+    {#
+        🚨 Photographs sit OUTSIDE the budget card, and the note says so. They
+        come from the schools' own sites, which cost nothing to read, and an
+        operator who assumed otherwise would turn them off to save an allowance
+        they are not spending.
+    #}
+    <div class="admin-card">
+        <div class="admin-card-header">@lang('almanac.admin.heading_photos')</div>
+        <div class="admin-card-body">
+            <p class="admin-hint">@lang('almanac.admin.photos_note')</p>
+
+            <p class="admin-hint">
+                @lang('almanac.admin.photos_coverage', [
+                    'covered' => $coverage['covered'],
+                    'current' => $coverage['current'],
+                ])
+            </p>
+
+            @if ($coverage['missing'] > 0)
+            <p class="admin-hint">@lang('almanac.admin.photos_missing', ['count' => $coverage['missing']])</p>
+            @endif
+
+            <div class="admin-form-group">
+                <label class="admin-checkbox-label">
+                    <input type="checkbox" name="almanac_photos" value="1" @if($settings->photosEnabled())checked @endif>
+                    @lang('almanac.admin.photos')
+                </label>
+                <div class="form-hint">@lang('almanac.admin.photos_enabled_note')</div>
+            </div>
+
+            <div class="admin-form-group">
+                <label for="almanac_photo_teams">@lang('almanac.admin.photo_teams')</label>
+                <input type="number" id="almanac_photo_teams" name="almanac_photo_teams"
+                       class="admin-input" min="1" max="140" value="{{ $settings->photoTeams() }}">
+                <div class="form-hint">@lang('almanac.admin.photo_teams_note')</div>
+            </div>
+
+            <div class="admin-form-group">
+                <label for="almanac_photo_days">@lang('almanac.admin.photo_days')</label>
+                <input type="number" id="almanac_photo_days" name="almanac_photo_days"
+                       class="admin-input" min="1" max="180" value="{{ $settings->photoDays() }}">
+                <div class="form-hint">@lang('almanac.admin.photo_days_note')</div>
+            </div>
+        </div>
+    </div>
+
     <div class="admin-card">
         <div class="admin-card-header">@lang('almanac.admin.heading_budget')</div>
         <div class="admin-card-body">
@@ -169,6 +217,70 @@
         </div>
     </div>
 </form>
+
+{#
+    Every school and the site its photographs come from.
+
+    🚨 A form PER ROW, outside the settings form above — a form inside a form is
+    not nested by any browser, it is closed early, and the outer one silently
+    stops submitting the fields that follow it.
+
+    Schools with no site sort first, because they are the only rows anybody
+    opens this table to deal with.
+#}
+<div class="admin-card">
+    <div class="admin-card-header">@lang('almanac.admin.heading_sites')</div>
+    <div class="admin-card-body">
+        <p class="admin-hint">@lang('almanac.admin.sites_note')</p>
+
+        <form method="POST" action="/admin/almanac/photos" class="admin-inline-form">
+            @csrf
+            <button type="submit" class="admin-btn admin-btn-sm">@lang('almanac.admin.photos_now')</button>
+        </form>
+
+        {#
+            🚨 Rows, not a table. A `<form>` inside a `<tr>` is not nested by
+            any browser — `tr` accepts only cells, so the parser lifts the form
+            out and every input in the row ends up belonging to no form at all.
+            The row would look right, submit nothing, and say it saved.
+        #}
+        @each ($sites as $site)
+        <form method="POST" action="/admin/almanac/site" class="alm-site-row">
+            @csrf
+            <input type="hidden" name="team" value="{{ $site['id'] }}">
+
+            <span class="alm-site-school">{{ $site['school'] }}</span>
+
+            <input type="text" name="domain" class="admin-input" autocomplete="off"
+                   aria-label="@lang('almanac.admin.site_domain')"
+                   value="{{ $site['site_domain'] }}" placeholder="rolltide.com">
+
+            <select name="platform" class="admin-input" aria-label="@lang('almanac.admin.site_platform')">
+                <option value=""></option>
+                @each ($platforms as $platform)
+                <option value="{{ $platform }}"
+                    @if($site['site_platform'] === $platform)selected @endif>{{ $platform }}</option>
+                @endeach
+            </select>
+
+            <input type="number" name="sport_id" class="admin-input alm-site-sport" min="0"
+                   aria-label="@lang('almanac.admin.site_sport')" value="{{ $site['site_sport_id'] }}">
+
+            <span class="alm-site-state">
+                @empty($site['photos_at'])@lang('almanac.admin.site_never')@endempty
+                @notempty($site['photos_at'])
+                    @notempty($site['photos_error']){{ $site['photos_error'] }}@endnotempty
+                    @empty($site['photos_error'])
+                        @lang('almanac.admin.site_found', ['count' => $site['photos_found']])
+                    @endempty
+                @endnotempty
+            </span>
+
+            <button type="submit" class="admin-btn admin-btn-sm">@lang('almanac.save')</button>
+        </form>
+        @endeach
+    </div>
+</div>
 
 <div class="admin-card">
     <div class="admin-card-header">@lang('almanac.admin.heading_restart')</div>

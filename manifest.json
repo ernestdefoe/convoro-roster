@@ -1,7 +1,7 @@
 {
     "key": "almanac",
     "name": "Almanac",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Every FBS team, roster and player in one place. Browse by conference, open a school for its roster and season, then open a player for his career stats and the high-school class he came out of. Includes a recruiting board and a transfer-portal tracker. Data comes from CollegeFootballData on a scheduled, budget-aware sync — no page ever waits on an outbound call.",
     "author": "Ernest Defoe",
     "convoro": "^1.5.0",
