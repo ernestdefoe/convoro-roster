@@ -1,0 +1,256 @@
+{#
+    Almanac's styles, injected once per page by the template that needs them.
+
+    🚨 Every colour is a `--c-*` custom property. Convoro's prefix is `--c-`,
+    not the `--i-` an IPS habit reaches for, and a wrong prefix paints nothing —
+    which on a dark theme reads as a page that renders white text on white.
+
+    🚨 Nothing here sets a background on a crest. These logos are not square and
+    most have transparent ground; a plate or a border-radius behind one takes a
+    bite out of somebody's team. `object-fit: contain` in a square box, and
+    nothing else.
+#}
+<style>
+    .alm-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: .75rem;
+    }
+
+    /* A team tile: crest first, name under it. */
+    .alm-team {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        padding: .7rem .8rem;
+        border: 1px solid var(--c-border);
+        border-radius: 10px;
+        background: var(--c-surface);
+        color: var(--c-text);
+        text-decoration: none;
+        transition: border-color .15s ease, transform .15s ease;
+    }
+
+    .alm-team:hover {
+        border-color: var(--c-primary);
+        transform: translateY(-1px);
+    }
+
+    .alm-crest {
+        width: var(--alm-crest, 40px);
+        height: var(--alm-crest, 40px);
+        flex: 0 0 auto;
+        object-fit: contain;
+    }
+
+    .alm-team-name {
+        font-weight: 600;
+        line-height: 1.2;
+    }
+
+    .alm-team-sub {
+        font-size: .8rem;
+        color: var(--c-text-muted);
+    }
+
+    .alm-conference {
+        margin-bottom: 1.5rem;
+    }
+
+    .alm-conference-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+        margin: 0 0 .6rem;
+    }
+
+    .alm-conference-head h3 {
+        margin: 0;
+        font-size: 1.05rem;
+    }
+
+    .alm-count {
+        font-size: .8rem;
+        color: var(--c-text-muted);
+    }
+
+    /* ---------------------------------------------------------- team page */
+
+    .alm-hero {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border: 1px solid var(--c-border);
+        border-radius: 12px;
+        background: var(--c-surface);
+        margin-bottom: 1rem;
+    }
+
+    .alm-hero .alm-crest {
+        --alm-crest: 76px;
+    }
+
+    .alm-hero h2 {
+        margin: 0 0 .15rem;
+    }
+
+    .alm-hero-meta {
+        color: var(--c-text-muted);
+        font-size: .9rem;
+    }
+
+    .alm-stat-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.25rem;
+        margin-top: .5rem;
+    }
+
+    .alm-stat-label {
+        display: block;
+        font-size: .72rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--c-text-muted);
+    }
+
+    .alm-stat-value {
+        font-size: 1.05rem;
+        font-weight: 600;
+    }
+
+    .alm-section {
+        margin: 1.5rem 0;
+    }
+
+    .alm-section > h3 {
+        margin: 0 0 .6rem;
+        font-size: 1.05rem;
+    }
+
+    /* Wide tables scroll inside themselves rather than the page. */
+    .alm-scroll {
+        overflow-x: auto;
+    }
+
+    .alm-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .9rem;
+    }
+
+    .alm-table th,
+    .alm-table td {
+        padding: .45rem .6rem;
+        text-align: left;
+        border-bottom: 1px solid var(--c-border);
+        white-space: nowrap;
+    }
+
+    .alm-table th {
+        font-size: .74rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--c-text-muted);
+        font-weight: 600;
+    }
+
+    .alm-table tbody tr:hover {
+        background: var(--c-inset);
+    }
+
+    .alm-num {
+        color: var(--c-text-muted);
+        font-variant-numeric: tabular-nums;
+        width: 3rem;
+    }
+
+    /* -------------------------------------------------------- player page */
+
+    .alm-player-head {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        padding: 1rem;
+        border: 1px solid var(--c-border);
+        border-radius: 12px;
+        background: var(--c-surface);
+    }
+
+    .alm-shot {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: var(--c-inset);
+        flex: 0 0 auto;
+    }
+
+    /* Shown when there is no ESPN headshot — see Players::headshot(). */
+    .alm-initials {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        background: var(--c-inset);
+        color: var(--c-text-muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.9rem;
+        font-weight: 600;
+        flex: 0 0 auto;
+    }
+
+    /* ------------------------------------------------------------ recruits */
+
+    .alm-stars {
+        color: var(--c-primary);
+        letter-spacing: .05em;
+        white-space: nowrap;
+    }
+
+    .alm-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5rem;
+        align-items: flex-end;
+        margin-bottom: 1rem;
+    }
+
+    .alm-filters label {
+        display: block;
+        font-size: .72rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--c-text-muted);
+        margin-bottom: .2rem;
+    }
+
+    .alm-pager {
+        display: flex;
+        gap: .5rem;
+        align-items: center;
+        justify-content: center;
+        margin-top: 1rem;
+    }
+
+    /* The line that keeps every page honest about how old its rows are. */
+    .alm-freshness {
+        font-size: .78rem;
+        color: var(--c-text-muted);
+        margin-top: 1.25rem;
+    }
+
+    @media (max-width: 640px) {
+        .alm-hero {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .alm-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+    }
+</style>

@@ -1,0 +1,137 @@
+@layout('theme::layouts/admin')
+
+@section('title')@lang('almanac.admin_title')@endsection
+
+@section('content')
+<div class="page-header">
+    <div>
+        <h2>@lang('almanac.admin_title')</h2>
+        <p class="page-header-note">@lang('almanac.admin.intro')</p>
+    </div>
+</div>
+
+@notempty($notice)<div class="alert alert-success">{{ $notice }}</div>@endnotempty
+
+{#
+    🚨 What the machine is doing, before any form. An operator opens this screen
+    because something looks wrong, and the first thing they need is a sentence
+    saying which of "off", "no key", "working" and "broken" is the case — each
+    of which has a different fix.
+#}
+<section class="card">
+    <h3>@lang('almanac.admin.state')</h3>
+
+    <p>
+        @empty($status)@lang('almanac.admin.never_run')@endempty
+        @notempty($status){{ __('almanac.status.' . $status) }}@endnotempty
+    </p>
+
+    @if ($mode === 'refresh' && $remaining < 1)
+    <p>@lang('almanac.admin.progress_complete', ['days' => $settings->refreshDays()])</p>
+    @endif
+
+    @if ($remaining > 0)
+    <p>@lang('almanac.admin.progress_working', ['remaining' => $remaining])</p>
+    @endif
+
+    <p>
+        @lang('almanac.admin.budget'):
+        @notempty($budget){{ $budget }}@endnotempty
+        @empty($budget)@lang('almanac.admin.budget_unknown')@endempty
+    </p>
+
+    <h4>@lang('almanac.admin.counts')</h4>
+    <ul>
+        <li>@lang('almanac.admin.count_teams'): {{ $counts['teams'] }}</li>
+        <li>@lang('almanac.admin.count_players'): {{ $counts['players'] }}</li>
+        <li>@lang('almanac.admin.count_recruits'): {{ $counts['recruits'] }}</li>
+        <li>@lang('almanac.admin.count_stats'): {{ $counts['stats'] }}</li>
+    </ul>
+
+    <form method="post" action="/admin/almanac/sync">
+        @csrf
+        <button class="btn btn-secondary btn-sm" type="submit">@lang('almanac.admin.sync_now')</button>
+    </form>
+</section>
+
+<section class="card">
+    <form method="post" action="/admin/almanac/save">
+        @csrf
+
+        <div class="form-field">
+            <label>
+                <input type="checkbox" name="almanac_enabled" value="1"@if ($settings->enabled()) checked@endif>
+                @lang('almanac.admin.enabled')
+            </label>
+            <p class="form-note">@lang('almanac.admin.enabled_note')</p>
+        </div>
+
+        <div class="form-field">
+            <label for="alm-key">@lang('almanac.admin.api_key')</label>
+            {#
+                🚨 Never rendered back with a value. A credential printed into a
+                page is a credential in a browser cache and in whatever
+                screenshot gets attached to a support ticket. Blank means keep —
+                see Settings::save().
+            #}
+            <input id="alm-key" type="password" name="almanac_cfbd_key" value="" autocomplete="off">
+            <p class="form-note">@lang('almanac.admin.api_key_note')</p>
+            @if ($borrowed)<p class="form-note">@lang('almanac.admin.api_key_borrowed')</p>@endif
+        </div>
+
+        <div class="form-field">
+            <label for="alm-season">@lang('almanac.admin.season')</label>
+            <input id="alm-season" type="number" name="almanac_season" value="{{ $settings->get('almanac_season') }}">
+            <p class="form-note">@lang('almanac.admin.season_note')</p>
+        </div>
+
+        <div class="form-field">
+            <label for="alm-back">@lang('almanac.admin.seasons_back')</label>
+            <input id="alm-back" type="number" min="1" max="20" name="almanac_seasons_back" value="{{ $settings->seasonsBack() }}">
+            <p class="form-note">@lang('almanac.admin.seasons_back_note')</p>
+        </div>
+
+        <div class="form-field">
+            <label for="alm-classes">@lang('almanac.admin.recruit_classes')</label>
+            <input id="alm-classes" type="number" min="1" max="25" name="almanac_recruit_classes" value="{{ $settings->recruitClasses() }}">
+            <p class="form-note">@lang('almanac.admin.recruit_classes_note')</p>
+        </div>
+
+        <div class="form-field">
+            <label>
+                <input type="checkbox" name="almanac_game_logs" value="1"@if ($settings->gameLogs()) checked@endif>
+                @lang('almanac.admin.game_logs')
+            </label>
+            <p class="form-note">@lang('almanac.admin.game_logs_note')</p>
+        </div>
+
+        <div class="form-field">
+            <label for="alm-reserve">@lang('almanac.admin.budget_reserve')</label>
+            <input id="alm-reserve" type="number" min="0" name="almanac_budget_reserve" value="{{ $settings->budgetReserve() }}">
+            <p class="form-note">@lang('almanac.admin.budget_reserve_note')</p>
+        </div>
+
+        <div class="form-field">
+            <label for="alm-cap">@lang('almanac.admin.run_cap')</label>
+            <input id="alm-cap" type="number" min="1" max="500" name="almanac_run_cap" value="{{ $settings->runCap() }}">
+            <p class="form-note">@lang('almanac.admin.run_cap_note')</p>
+        </div>
+
+        <div class="form-field">
+            <label for="alm-refresh">@lang('almanac.admin.refresh_days')</label>
+            <input id="alm-refresh" type="number" min="1" max="60" name="almanac_refresh_days" value="{{ $settings->refreshDays() }}">
+            <p class="form-note">@lang('almanac.admin.refresh_days_note')</p>
+        </div>
+
+        <button class="btn btn-primary" type="submit">@lang('almanac.save')</button>
+    </form>
+</section>
+
+<section class="card">
+    <form method="post" action="/admin/almanac/restart">
+        @csrf
+        <button class="btn btn-secondary btn-sm" type="submit">@lang('almanac.admin.restart')</button>
+        <p class="form-note">@lang('almanac.admin.restart_note')</p>
+    </form>
+</section>
+@endsection

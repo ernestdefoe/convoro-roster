@@ -1,0 +1,271 @@
+@layout('theme::layouts/main')
+
+@section('title'){{ $player['name'] }}@endsection
+
+@section('breadcrumb')
+<a href="/almanac">@lang('almanac.title')</a>
+@notempty($player['team_slug'])
+<a href="/almanac/team/{{ $player['team_slug'] }}">{{ $player['school'] }}</a>
+@endnotempty
+<span>{{ $player['name'] }}</span>
+@endsection
+
+@section('content')
+@include('almanac::front/styles')
+
+@php
+    $dark = ($themeMode ?? 'light') === 'dark';
+
+    $crest = static function (array $row, string $light = 'logo', string $shade = 'logo_dark') use ($dark): string {
+        $preferred = $dark ? (string) ($row[$shade] ?? '') : (string) ($row[$light] ?? '');
+
+        return trim($preferred) !== ''
+            ? $preferred
+            : (string) ($row[$light] ?? $row[$shade] ?? '');
+    };
+
+    /*
+     * Initials, for the players ESPN has no headshot for. That is not a rare
+     * case — every player CFBD could not match to an ESPN athlete carries a
+     * negative id and no picture — so it has to look deliberate rather than
+     * broken. See Players::headshot().
+     */
+    $initials = '';
+
+    foreach (preg_split('/\s+/', trim((string) $player['name'])) ?: [] as $part) {
+        if ($part !== '') {
+            $initials .= mb_strtoupper(mb_substr($part, 0, 1));
+        }
+    }
+
+    $initials = mb_substr($initials, 0, 2);
+
+    /*
+     * Career stats arrive as one row per stat type. Pivoted here into a table
+     * per category — seasons down, stat types across — which is how a stat line
+     * is read everywhere else in the sport.
+     */
+    $columns = [];
+
+    foreach ($career as $seasonRow) {
+        foreach ($seasonRow['categories'] as $category => $types) {
+            foreach ($types as $type => $value) {
+                $columns[$category][$type] = true;
+            }
+        }
+    }
+@endphp
+
+<div class="alm-player-head">
+    @notempty($headshot)
+    <img class="alm-shot" src="{{ $headshot }}" alt="" width="96" height="96">
+    @endnotempty
+    @empty($headshot)
+    <div class="alm-initials" aria-hidden="true">{{ $initials }}</div>
+    @endempty
+
+    <div>
+        <h2>{{ $player['name'] }}</h2>
+
+        <div class="alm-hero-meta">
+            @notempty($player['jersey'])#{{ $player['jersey'] }} · @endnotempty
+            @notempty($player['position']){{ $player['position'] }} · @endnotempty
+            @notempty($classYear){{ __($classYear) }}@endnotempty
+        </div>
+
+        <div class="alm-hero-meta">
+            @notempty($height){{ $height }}@endnotempty@notempty($player['weight']) · {{ $player['weight'] }} @lang('almanac.lbs')@endnotempty
+            @notempty($player['home_city']) · {{ $player['home_city'] }}@endnotempty@notempty($player['home_state']), {{ $player['home_state'] }}@endnotempty
+        </div>
+
+        @notempty($player['team_slug'])
+        <p>
+            <a class="alm-team" href="/almanac/team/{{ $player['team_slug'] }}">
+                @php $teamLogo = $crest($player); @endphp
+                @notempty($teamLogo)<img class="alm-crest" src="{{ $teamLogo }}" alt="" width="28" height="28" style="--alm-crest: 28px">@endnotempty
+                <span class="alm-team-name">{{ $player['school'] }}</span>
+            </a>
+        </p>
+        @endnotempty
+    </div>
+</div>
+
+{#
+    🚨 The recruiting panel comes BEFORE the stats, and that ordering is the
+    whole point of joining the two datasets. A true freshman has no stats at all
+    — he is exactly who somebody looks up in February — and a page that led with
+    an empty stat table and buried his class, stars and high school underneath
+    would be worthless in the one case it was built for.
+#}
+@notempty($recruit)
+<section class="alm-section">
+    <h3>@lang('almanac.recruiting_profile')</h3>
+
+    <div class="alm-stat-row">
+        @notempty($recruit['stars'])
+        <div>
+            <span class="alm-stat-label">@lang('almanac.stars')</span>
+            <span class="alm-stat-value alm-stars">{{ str_repeat('★', (int) $recruit['stars']) }}</span>
+        </div>
+        @endnotempty
+
+        @notempty($recruit['rating'])
+        <div>
+            <span class="alm-stat-label">@lang('almanac.rating')</span>
+            <span class="alm-stat-value">{{ $recruit['rating'] }}</span>
+        </div>
+        @endnotempty
+
+        @notempty($recruit['ranking'])
+        <div>
+            <span class="alm-stat-label">@lang('almanac.national_rank')</span>
+            <span class="alm-stat-value">#{{ $recruit['ranking'] }}</span>
+        </div>
+        @endnotempty
+
+        <div>
+            <span class="alm-stat-label">@lang('almanac.class_of')</span>
+            <span class="alm-stat-value">{{ $recruit['year'] }}</span>
+        </div>
+
+        @notempty($recruit['high_school'])
+        <div>
+            <span class="alm-stat-label">@lang('almanac.high_school')</span>
+            <span class="alm-stat-value">{{ $recruit['high_school'] }}</span>
+        </div>
+        @endnotempty
+    </div>
+</section>
+@endnotempty
+
+@notempty($career)
+<section class="alm-section">
+    <h3>@lang('almanac.career')</h3>
+
+    @each ($columns as $category => $types)
+    <h4>{{ ucfirst($category) }}</h4>
+
+    <div class="alm-scroll">
+        <table class="alm-table">
+            <thead>
+                <tr>
+                    <th>@lang('almanac.season')</th>
+                    <th>@lang('almanac.team')</th>
+                    @each (array_keys($types) as $type)
+                    <th>{{ $type }}</th>
+                    @endeach
+                </tr>
+            </thead>
+            <tbody>
+                @each ($career as $seasonRow)
+                @if (isset($seasonRow['categories'][$category]))
+                <tr>
+                    <td>{{ $seasonRow['season'] }}</td>
+                    <td>
+                        @notempty($seasonRow['team_slug'])
+                        <a href="/almanac/team/{{ $seasonRow['team_slug'] }}">{{ $seasonRow['team'] }}</a>
+                        @endnotempty
+                    </td>
+                    @each (array_keys($types) as $type)
+                    <td>{{ $seasonRow['categories'][$category][$type] ?? '—' }}</td>
+                    @endeach
+                </tr>
+                @endif
+                @endeach
+            </tbody>
+        </table>
+    </div>
+    @endeach
+</section>
+@endnotempty
+
+@empty($career)
+<section class="alm-section">
+    <div class="empty-state">
+        <p>@lang('almanac.no_stats')</p>
+    </div>
+</section>
+@endempty
+
+@notempty($gameLog)
+<section class="alm-section">
+    <h3>@lang('almanac.game_log', ['season' => $logSeason])</h3>
+
+    @notempty($statSeasons)
+    <form class="alm-filters" method="get" action="/almanac/player/{{ $player['slug'] }}">
+        <div>
+            <label for="alm-log-season">@lang('almanac.season')</label>
+            <select id="alm-log-season" name="season" onchange="this.form.submit()">
+                @each ($statSeasons as $option)
+                <option value="{{ $option }}"@if ((int) $option === (int) $logSeason) selected@endif>{{ $option }}</option>
+                @endeach
+            </select>
+        </div>
+        <noscript><button class="btn btn-secondary btn-sm" type="submit">@lang('almanac.go')</button></noscript>
+    </form>
+    @endnotempty
+
+    <div class="alm-scroll">
+        <table class="alm-table">
+            <thead>
+                <tr>
+                    <th>@lang('almanac.week')</th>
+                    <th>@lang('almanac.opponent')</th>
+                    <th>@lang('almanac.stat_line')</th>
+                </tr>
+            </thead>
+            <tbody>
+                @each ($gameLog as $game)
+                <tr>
+                    <td class="alm-num">{{ $game['week'] }}</td>
+                    <td>
+                        @if (($game['home_away'] ?? '') === 'away')@lang('almanac.at') @endif
+                        @notempty($game['opponent_slug'])
+                        <a href="/almanac/team/{{ $game['opponent_slug'] }}">{{ $game['opponent'] }}</a>
+                        @endnotempty
+                        @empty($game['opponent_slug']){{ $game['opponent'] }}@endempty
+                    </td>
+                    <td>
+                        @php
+                            /* One readable line rather than forty sparse columns:
+                             * a receiver and a punter share no stat types at all,
+                             * so a fixed grid would be mostly dashes. */
+                            $parts = [];
+
+                            foreach ($game['categories'] as $cat => $types) {
+                                $bits = [];
+
+                                foreach ($types as $type => $value) {
+                                    $bits[] = $value . ' ' . $type;
+                                }
+
+                                $parts[] = ucfirst($cat) . ': ' . implode(', ', $bits);
+                            }
+                        @endphp
+                        {{ implode(' · ', $parts) }}
+                    </td>
+                </tr>
+                @endeach
+            </tbody>
+        </table>
+    </div>
+</section>
+@endnotempty
+
+@notempty($transfers)
+<section class="alm-section">
+    <h3>@lang('almanac.transfers')</h3>
+    <ul>
+        @each ($transfers as $move)
+        <li>
+            {{ $move['season'] }} — {{ $move['origin'] }}
+            @notempty($move['destination']) → {{ $move['destination'] }}@endnotempty
+            @empty($move['destination']) → @lang('almanac.undecided')@endempty
+        </li>
+        @endeach
+    </ul>
+</section>
+@endnotempty
+
+<p class="alm-freshness">@lang('almanac.freshness')</p>
+@endsection

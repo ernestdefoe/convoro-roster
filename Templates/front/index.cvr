@@ -1,0 +1,100 @@
+@layout('theme::layouts/main')
+
+@section('title')@lang('almanac.title')@endsection
+
+@section('breadcrumb')
+<span>@lang('almanac.title')</span>
+@endsection
+
+@section('content')
+@include('almanac::front/styles')
+
+@php
+    /*
+     * 🚨 The crest that suits the theme being rendered.
+     *
+     * ESPN publishes two marks: `500` is drawn for a light ground and
+     * `500-dark` is the pale one for a dark ground. Picks shipped with only the
+     * light one read, and every navy and black crest sat invisible on a dark
+     * theme while the column that would have fixed it was populated the whole
+     * time. Both are stored here, so both are used.
+     *
+     * Falls back either way — a team synced before one column existed has only
+     * the other.
+     */
+    $crest = static function (array $team) use ($themeMode): string {
+        $dark = ($themeMode ?? 'light') === 'dark';
+
+        $preferred = $dark
+            ? (string) ($team['logo_dark'] ?? '')
+            : (string) ($team['logo'] ?? '');
+
+        if (trim($preferred) !== '') {
+            return $preferred;
+        }
+
+        return (string) ($team['logo'] ?? $team['logo_dark'] ?? '');
+    };
+@endphp
+
+<div class="page-header">
+    <div>
+        <h2>@lang('almanac.title')</h2>
+        <p class="page-header-note">@lang('almanac.intro')</p>
+    </div>
+
+    <div class="page-header-actions">
+        <a class="btn btn-secondary btn-sm" href="/almanac/recruiting">@lang('almanac.recruiting.nav')</a>
+        <a class="btn btn-secondary btn-sm" href="/almanac/transfers">@lang('almanac.portal.nav')</a>
+    </div>
+</div>
+
+@empty($conferences)
+{#
+    An Almanac that has been switched on but never synced. Says which of the two
+    things is missing rather than "no teams", because the fix is different: one
+    needs an API key, the other needs the scheduled job to have run once.
+#}
+<div class="empty-state">
+    <p>@lang('almanac.empty')</p>
+</div>
+@endempty
+
+@notempty($conferences)
+@each ($conferences as $group)
+<section class="alm-conference">
+    <div class="alm-conference-head">
+        <h3>{{ $group['conference'] }}</h3>
+        {# __n, not @lang: @lang does not pluralise, so a two-form string would
+           render its own pipe on the page. #}
+        <span class="alm-count">{{ __n('almanac.team_count', count($group['teams'])) }}</span>
+    </div>
+
+    <div class="alm-grid">
+        @each ($group['teams'] as $team)
+        <a class="alm-team" href="/almanac/team/{{ $team['slug'] }}">
+            @php $logo = $crest($team); @endphp
+            @notempty($logo)
+            {#
+                No lazy loading. These are the only images on the page and they
+                are the thing somebody came to look at; deferring them shows a
+                grid of blank squares that fill in as you scroll.
+            #}
+            <img class="alm-crest" src="{{ $logo }}" alt="" width="40" height="40">
+            @endnotempty
+
+            <span>
+                <span class="alm-team-name">{{ $team['school'] }}</span>
+                @notempty($team['mascot'])
+                <span class="alm-team-sub">{{ $team['mascot'] }}</span>
+                @endnotempty
+            </span>
+        </a>
+        @endeach
+    </div>
+</section>
+@endeach
+
+<p class="alm-freshness">@lang('almanac.freshness')</p>
+@endnotempty
+@endsection

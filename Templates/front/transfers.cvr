@@ -1,0 +1,136 @@
+@layout('theme::layouts/main')
+
+@section('title')@lang('almanac.portal.title', ['season' => $season])@endsection
+
+@section('breadcrumb')
+<a href="/almanac">@lang('almanac.title')</a>
+<span>@lang('almanac.portal.nav')</span>
+@endsection
+
+@section('content')
+@include('almanac::front/styles')
+
+@php
+    $dark = ($themeMode ?? 'light') === 'dark';
+
+    $crest = static function (array $row, string $light, string $shade) use ($dark): string {
+        $preferred = $dark ? (string) ($row[$shade] ?? '') : (string) ($row[$light] ?? '');
+
+        return trim($preferred) !== ''
+            ? $preferred
+            : (string) ($row[$light] ?? $row[$shade] ?? '');
+    };
+@endphp
+
+<div class="page-header">
+    <div>
+        <h2>@lang('almanac.portal.title', ['season' => $season])</h2>
+        <p class="page-header-note">@lang('almanac.portal.intro')</p>
+    </div>
+    <div class="page-header-actions">
+        <a class="btn btn-secondary btn-sm" href="/almanac">@lang('almanac.title')</a>
+        <a class="btn btn-secondary btn-sm" href="/almanac/recruiting">@lang('almanac.recruiting.nav')</a>
+    </div>
+</div>
+
+<form class="alm-filters" method="get" action="/almanac/transfers">
+    <div>
+        <label for="alm-season">@lang('almanac.season')</label>
+        <select id="alm-season" name="season">
+            @each ($seasons as $option)
+            <option value="{{ $option }}"@if ((int) $option === (int) $season) selected@endif>{{ $option }}</option>
+            @endeach
+        </select>
+    </div>
+
+    <div>
+        <label for="alm-position">@lang('almanac.position')</label>
+        <input id="alm-position" type="text" name="position" value="{{ $filters['position'] }}" size="5">
+    </div>
+
+    <div>
+        <label for="alm-status">@lang('almanac.status')</label>
+        <select id="alm-status" name="status">
+            <option value="">@lang('almanac.any')</option>
+            <option value="undecided"@if ($filters['status'] === 'undecided') selected@endif>@lang('almanac.undecided')</option>
+        </select>
+    </div>
+
+    <div>
+        <label for="alm-q">@lang('almanac.search')</label>
+        <input id="alm-q" type="search" name="q" value="{{ $filters['q'] }}">
+    </div>
+
+    <button class="btn btn-primary btn-sm" type="submit">@lang('almanac.filter')</button>
+</form>
+
+<p class="alm-count">@lang('almanac.showing', ['shown' => count($board['rows']), 'total' => $board['total']])</p>
+
+@empty($board['rows'])
+<div class="empty-state"><p>@lang('almanac.no_transfers')</p></div>
+@endempty
+
+@notempty($board['rows'])
+<div class="alm-scroll">
+    <table class="alm-table">
+        <thead>
+            <tr>
+                <th>@lang('almanac.player')</th>
+                <th>@lang('almanac.position')</th>
+                <th>@lang('almanac.from')</th>
+                <th>@lang('almanac.to')</th>
+                <th>@lang('almanac.stars')</th>
+                <th>@lang('almanac.eligibility')</th>
+            </tr>
+        </thead>
+        <tbody>
+            @each ($board['rows'] as $row)
+            <tr>
+                <td>{{ $row['name'] }}</td>
+                <td>{{ $row['position'] }}</td>
+                <td>
+                    @php $originLogo = $crest($row, 'origin_logo', 'origin_logo_dark'); @endphp
+                    @notempty($row['origin_slug'])
+                    <a class="alm-team" href="/almanac/team/{{ $row['origin_slug'] }}">
+                        @notempty($originLogo)<img class="alm-crest" src="{{ $originLogo }}" alt="" width="22" height="22" style="--alm-crest: 22px">@endnotempty
+                        <span>{{ $row['origin'] }}</span>
+                    </a>
+                    @endnotempty
+                    @empty($row['origin_slug']){{ $row['origin'] }}@endempty
+                </td>
+                <td>
+                    @php $destLogo = $crest($row, 'destination_logo', 'destination_logo_dark'); @endphp
+                    @notempty($row['destination_slug'])
+                    <a class="alm-team" href="/almanac/team/{{ $row['destination_slug'] }}">
+                        @notempty($destLogo)<img class="alm-crest" src="{{ $destLogo }}" alt="" width="22" height="22" style="--alm-crest: 22px">@endnotempty
+                        <span>{{ $row['destination'] }}</span>
+                    </a>
+                    @endnotempty
+                    @empty($row['destination_slug'])
+                    @notempty($row['destination']){{ $row['destination'] }}@endnotempty
+                    @empty($row['destination'])<span class="alm-count">@lang('almanac.undecided')</span>@endempty
+                    @endempty
+                </td>
+                <td class="alm-stars">@notempty($row['stars']){{ str_repeat('★', (int) $row['stars']) }}@endnotempty</td>
+                <td>{{ $row['eligibility'] }}</td>
+            </tr>
+            @endeach
+        </tbody>
+    </table>
+</div>
+
+@if ($board['pages'] > 1)
+<div class="alm-pager">
+    @if ($board['page'] > 1)
+    <a class="btn btn-secondary btn-sm" href="?season={{ $season }}&position={{ $filters['position'] }}&status={{ $filters['status'] }}&q={{ urlencode($filters['q']) }}&page={{ $board['page'] - 1 }}">@lang('almanac.previous')</a>
+    @endif
+    <span class="alm-count">@lang('almanac.page_of', ['page' => $board['page'], 'pages' => $board['pages']])</span>
+    @if ($board['page'] < $board['pages'])
+    <a class="btn btn-secondary btn-sm" href="?season={{ $season }}&position={{ $filters['position'] }}&status={{ $filters['status'] }}&q={{ urlencode($filters['q']) }}&page={{ $board['page'] + 1 }}">@lang('almanac.next')</a>
+    @endif
+</div>
+@endif
+@endnotempty
+
+<p class="alm-freshness">@lang('almanac.freshness')</p>
+@endsection

@@ -1,0 +1,188 @@
+@layout('theme::layouts/main')
+
+@section('title')@lang('almanac.recruiting.title', ['year' => $year])@endsection
+
+@section('breadcrumb')
+<a href="/almanac">@lang('almanac.title')</a>
+<span>@lang('almanac.recruiting.nav')</span>
+@endsection
+
+@section('content')
+@include('almanac::front/styles')
+
+@php
+    $dark = ($themeMode ?? 'light') === 'dark';
+
+    $crest = static function (array $row, string $light, string $shade) use ($dark): string {
+        $preferred = $dark ? (string) ($row[$shade] ?? '') : (string) ($row[$light] ?? '');
+
+        return trim($preferred) !== ''
+            ? $preferred
+            : (string) ($row[$light] ?? $row[$shade] ?? '');
+    };
+@endphp
+
+<div class="page-header">
+    <div>
+        <h2>@lang('almanac.recruiting.title', ['year' => $year])</h2>
+        <p class="page-header-note">@lang('almanac.recruiting.intro')</p>
+    </div>
+    <div class="page-header-actions">
+        <a class="btn btn-secondary btn-sm" href="/almanac">@lang('almanac.title')</a>
+        <a class="btn btn-secondary btn-sm" href="/almanac/transfers">@lang('almanac.portal.nav')</a>
+    </div>
+</div>
+
+{#
+    🚨 A GET form, and every filter is a query parameter. The board is filtered
+    and paged in SQL, so a filtered view has its own URL that somebody can post
+    in a thread — which is the whole reason anybody looks at a recruiting board
+    on a forum.
+#}
+<form class="alm-filters" method="get" action="/almanac/recruiting">
+    <div>
+        <label for="alm-year">@lang('almanac.class_of')</label>
+        <select id="alm-year" name="year">
+            @each ($years as $option)
+            <option value="{{ $option }}"@if ((int) $option === (int) $year) selected@endif>{{ $option }}</option>
+            @endeach
+        </select>
+    </div>
+
+    <div>
+        <label for="alm-position">@lang('almanac.position')</label>
+        <select id="alm-position" name="position">
+            <option value="">@lang('almanac.any')</option>
+            @each ($positions as $option)
+            <option value="{{ $option }}"@if ($option === $filters['position']) selected@endif>{{ $option }}</option>
+            @endeach
+        </select>
+    </div>
+
+    <div>
+        <label for="alm-state">@lang('almanac.state')</label>
+        <select id="alm-state" name="state">
+            <option value="">@lang('almanac.any')</option>
+            @each ($states as $option)
+            <option value="{{ $option }}"@if ($option === $filters['state']) selected@endif>{{ $option }}</option>
+            @endeach
+        </select>
+    </div>
+
+    <div>
+        <label for="alm-stars">@lang('almanac.stars')</label>
+        <select id="alm-stars" name="stars">
+            <option value="0">@lang('almanac.any')</option>
+            @each ([5, 4, 3] as $option)
+            <option value="{{ $option }}"@if ((int) $option === (int) $filters['stars']) selected@endif>{{ $option }}+</option>
+            @endeach
+        </select>
+    </div>
+
+    <div>
+        <label for="alm-status">@lang('almanac.status')</label>
+        <select id="alm-status" name="status">
+            <option value="">@lang('almanac.any')</option>
+            <option value="committed"@if ($filters['status'] === 'committed') selected@endif>@lang('almanac.committed')</option>
+            <option value="uncommitted"@if ($filters['status'] === 'uncommitted') selected@endif>@lang('almanac.uncommitted')</option>
+        </select>
+    </div>
+
+    <div>
+        <label for="alm-q">@lang('almanac.search')</label>
+        <input id="alm-q" type="search" name="q" value="{{ $filters['q'] }}" placeholder="@lang('almanac.search_placeholder')">
+    </div>
+
+    <button class="btn btn-primary btn-sm" type="submit">@lang('almanac.filter')</button>
+</form>
+
+<p class="alm-count">@lang('almanac.showing', ['shown' => count($board['rows']), 'total' => $board['total']])</p>
+
+@empty($board['rows'])
+<div class="empty-state"><p>@lang('almanac.no_recruits')</p></div>
+@endempty
+
+@notempty($board['rows'])
+<div class="alm-scroll">
+    <table class="alm-table">
+        <thead>
+            <tr>
+                <th>@lang('almanac.national_rank')</th>
+                <th>@lang('almanac.player')</th>
+                <th>@lang('almanac.position')</th>
+                <th>@lang('almanac.stars')</th>
+                <th>@lang('almanac.rating')</th>
+                <th>@lang('almanac.high_school')</th>
+                <th>@lang('almanac.hometown')</th>
+                <th>@lang('almanac.committed_to')</th>
+            </tr>
+        </thead>
+        <tbody>
+            @each ($board['rows'] as $row)
+            <tr>
+                <td class="alm-num">@notempty($row['ranking'])#{{ $row['ranking'] }}@endnotempty</td>
+                <td>
+                    {# Links through only once he has enrolled and been synced. #}
+                    @notempty($row['player_slug'])
+                    <a href="/almanac/player/{{ $row['player_slug'] }}">{{ $row['name'] }}</a>
+                    @endnotempty
+                    @empty($row['player_slug']){{ $row['name'] }}@endempty
+                </td>
+                <td>{{ $row['position'] }}</td>
+                <td class="alm-stars">@notempty($row['stars']){{ str_repeat('★', (int) $row['stars']) }}@endnotempty</td>
+                <td>@notempty($row['rating']){{ $row['rating'] }}@endnotempty</td>
+                <td>{{ $row['high_school'] }}</td>
+                <td>@notempty($row['city']){{ $row['city'] }}@endnotempty@notempty($row['state']), {{ $row['state'] }}@endnotempty</td>
+                <td>
+                    @php $committedLogo = $crest($row, 'committed_logo', 'committed_logo_dark'); @endphp
+                    @notempty($row['committed_slug'])
+                    <a class="alm-team" href="/almanac/team/{{ $row['committed_slug'] }}">
+                        @notempty($committedLogo)<img class="alm-crest" src="{{ $committedLogo }}" alt="" width="22" height="22" style="--alm-crest: 22px">@endnotempty
+                        <span>{{ $row['committed_to'] }}</span>
+                    </a>
+                    @endnotempty
+                    @empty($row['committed_slug'])
+                    {# A commitment to a school Almanac does not carry still reads as text. #}
+                    @notempty($row['committed_to']){{ $row['committed_to'] }}@endnotempty
+                    @empty($row['committed_to'])<span class="alm-count">@lang('almanac.undecided')</span>@endempty
+                    @endempty
+                </td>
+            </tr>
+            @endeach
+        </tbody>
+    </table>
+</div>
+
+@if ($board['pages'] > 1)
+<div class="alm-pager">
+    @if ($board['page'] > 1)
+    <a class="btn btn-secondary btn-sm" href="?year={{ $year }}&position={{ $filters['position'] }}&state={{ $filters['state'] }}&stars={{ $filters['stars'] }}&status={{ $filters['status'] }}&q={{ urlencode($filters['q']) }}&page={{ $board['page'] - 1 }}">@lang('almanac.previous')</a>
+    @endif
+    <span class="alm-count">@lang('almanac.page_of', ['page' => $board['page'], 'pages' => $board['pages']])</span>
+    @if ($board['page'] < $board['pages'])
+    <a class="btn btn-secondary btn-sm" href="?year={{ $year }}&position={{ $filters['position'] }}&state={{ $filters['state'] }}&stars={{ $filters['stars'] }}&status={{ $filters['status'] }}&q={{ urlencode($filters['q']) }}&page={{ $board['page'] + 1 }}">@lang('almanac.next')</a>
+    @endif
+</div>
+@endif
+@endnotempty
+
+@notempty($rankings)
+<section class="alm-section">
+    <h3>@lang('almanac.class_rankings', ['year' => $year])</h3>
+    <div class="alm-grid">
+        @each ($rankings as $row)
+        <a class="alm-team" href="/almanac/team/{{ $row['slug'] }}">
+            @php $rankLogo = $crest($row, 'logo', 'logo_dark'); @endphp
+            @notempty($rankLogo)<img class="alm-crest" src="{{ $rankLogo }}" alt="" width="32" height="32" style="--alm-crest: 32px">@endnotempty
+            <span>
+                <span class="alm-team-name">#{{ $row['rank'] }} {{ $row['school'] }}</span>
+                <span class="alm-team-sub">{{ $row['points'] }} @lang('almanac.points')</span>
+            </span>
+        </a>
+        @endeach
+    </div>
+</section>
+@endnotempty
+
+<p class="alm-freshness">@lang('almanac.freshness')</p>
+@endsection

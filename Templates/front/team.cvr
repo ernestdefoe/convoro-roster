@@ -1,0 +1,221 @@
+@layout('theme::layouts/main')
+
+@section('title'){{ $team['school'] }}@endsection
+
+@section('breadcrumb')
+<a href="/almanac">@lang('almanac.title')</a>
+<span>{{ $team['school'] }}</span>
+@endsection
+
+@section('content')
+@include('almanac::front/styles')
+
+@php
+    $dark = ($themeMode ?? 'light') === 'dark';
+
+    /* See the note in front/index.cvr — both marks are stored, both are used. */
+    $crest = static function (array $row, string $light = 'logo', string $shade = 'logo_dark') use ($dark): string {
+        $preferred = $dark ? (string) ($row[$shade] ?? '') : (string) ($row[$light] ?? '');
+
+        return trim($preferred) !== ''
+            ? $preferred
+            : (string) ($row[$light] ?? $row[$shade] ?? '');
+    };
+
+    $logo = $crest($team);
+
+    $groupLabels = [
+        'offense' => 'almanac.group.offense',
+        'defense' => 'almanac.group.defense',
+        'specialists' => 'almanac.group.specialists',
+        'other' => 'almanac.group.other',
+    ];
+@endphp
+
+<div class="alm-hero">
+    @notempty($logo)
+    <img class="alm-crest" src="{{ $logo }}" alt="" width="76" height="76">
+    @endnotempty
+
+    <div>
+        <h2>{{ $team['school'] }}@notempty($team['mascot']) <span class="alm-team-sub">{{ $team['mascot'] }}</span>@endnotempty</h2>
+
+        <div class="alm-hero-meta">
+            {{ $team['conference'] }}@notempty($team['venue']) · {{ $team['venue'] }}@endnotempty@notempty($team['venue_city']), {{ $team['venue_city'] }}@endnotempty
+        </div>
+
+        <div class="alm-stat-row">
+            @notempty($record)
+            <div>
+                <span class="alm-stat-label">@lang('almanac.record')</span>
+                <span class="alm-stat-value">{{ $record['wins'] }}&ndash;{{ $record['losses'] }}</span>
+            </div>
+            <div>
+                <span class="alm-stat-label">@lang('almanac.conference_record')</span>
+                <span class="alm-stat-value">{{ $record['conf_wins'] }}&ndash;{{ $record['conf_losses'] }}</span>
+            </div>
+            @notempty($record['sp_rank'])
+            <div>
+                <span class="alm-stat-label">@lang('almanac.sp_rating')</span>
+                <span class="alm-stat-value">#{{ $record['sp_rank'] }}</span>
+            </div>
+            @endnotempty
+            @endnotempty
+
+            @notempty($classRank['rank'])
+            <div>
+                <span class="alm-stat-label">@lang('almanac.class_rank')</span>
+                <span class="alm-stat-value">#{{ $classRank['rank'] }}</span>
+            </div>
+            @endnotempty
+        </div>
+    </div>
+</div>
+
+{# A season the visitor can change. Only years Almanac holds are offered. #}
+@notempty($seasons)
+<form class="alm-filters" method="get" action="/almanac/team/{{ $team['slug'] }}">
+    <div>
+        <label for="alm-season">@lang('almanac.season')</label>
+        <select id="alm-season" name="season" onchange="this.form.submit()">
+            @each ($seasons as $row)
+            <option value="{{ $row['season'] }}"@if ((int) $row['season'] === (int) $season) selected@endif>{{ $row['season'] }}</option>
+            @endeach
+        </select>
+    </div>
+    <noscript><button class="btn btn-secondary btn-sm" type="submit">@lang('almanac.go')</button></noscript>
+</form>
+@endnotempty
+
+<section class="alm-section">
+    <h3>@lang('almanac.roster', ['season' => $season])</h3>
+
+    @empty($roster)
+    <div class="empty-state"><p>@lang('almanac.no_roster')</p></div>
+    @endempty
+
+    @each ($roster as $group => $rows)
+    <h4>{{ __($groupLabels[$group] ?? 'almanac.group.other') }}</h4>
+
+    <div class="alm-scroll">
+        <table class="alm-table">
+            <thead>
+                <tr>
+                    <th>@lang('almanac.jersey')</th>
+                    <th>@lang('almanac.player')</th>
+                    <th>@lang('almanac.position')</th>
+                    <th>@lang('almanac.class')</th>
+                    <th>@lang('almanac.height')</th>
+                    <th>@lang('almanac.weight')</th>
+                    <th>@lang('almanac.hometown')</th>
+                </tr>
+            </thead>
+            <tbody>
+                @each ($rows as $row)
+                <tr>
+                    <td class="alm-num">@notempty($row['jersey']){{ $row['jersey'] }}@endnotempty</td>
+                    <td><a href="/almanac/player/{{ $row['slug'] }}">{{ $row['name'] }}</a></td>
+                    <td>{{ $row['position'] }}</td>
+                    <td>
+                        @php $class = $players->classYear(isset($row['class_year']) ? (int) $row['class_year'] : null); @endphp
+                        @notempty($class){{ __($class) }}@endnotempty
+                    </td>
+                    <td>
+                        @php $ht = $players->height(isset($row['height']) ? (int) $row['height'] : null); @endphp
+                        @notempty($ht){{ $ht }}@endnotempty
+                    </td>
+                    <td>@notempty($row['weight']){{ $row['weight'] }}@endnotempty</td>
+                    <td>@notempty($row['home_city']){{ $row['home_city'] }}@endnotempty@notempty($row['home_state']), {{ $row['home_state'] }}@endnotempty</td>
+                </tr>
+                @endeach
+            </tbody>
+        </table>
+    </div>
+    @endeach
+</section>
+
+@notempty($recruits)
+<section class="alm-section">
+    <h3>
+        @lang('almanac.incoming_class', ['year' => $season + 1])
+        @notempty($classRank['rank'])<span class="alm-count">@lang('almanac.ranked_nationally', ['rank' => $classRank['rank']])</span>@endnotempty
+    </h3>
+
+    <div class="alm-scroll">
+        <table class="alm-table">
+            <thead>
+                <tr>
+                    <th>@lang('almanac.national_rank')</th>
+                    <th>@lang('almanac.player')</th>
+                    <th>@lang('almanac.position')</th>
+                    <th>@lang('almanac.stars')</th>
+                    <th>@lang('almanac.high_school')</th>
+                    <th>@lang('almanac.hometown')</th>
+                </tr>
+            </thead>
+            <tbody>
+                @each ($recruits as $row)
+                <tr>
+                    <td class="alm-num">@notempty($row['ranking'])#{{ $row['ranking'] }}@endnotempty</td>
+                    <td>{{ $row['name'] }}</td>
+                    <td>{{ $row['position'] }}</td>
+                    <td class="alm-stars">@notempty($row['stars']){{ str_repeat('★', (int) $row['stars']) }}@endnotempty</td>
+                    <td>{{ $row['high_school'] }}</td>
+                    <td>@notempty($row['city']){{ $row['city'] }}@endnotempty@notempty($row['state']), {{ $row['state'] }}@endnotempty</td>
+                </tr>
+                @endeach
+            </tbody>
+        </table>
+    </div>
+</section>
+@endnotempty
+
+@notempty($transfers['in'])
+<section class="alm-section">
+    <h3>@lang('almanac.portal_in')</h3>
+    <div class="alm-scroll">
+        <table class="alm-table">
+            <thead>
+                <tr>
+                    <th>@lang('almanac.player')</th>
+                    <th>@lang('almanac.position')</th>
+                    <th>@lang('almanac.from')</th>
+                    <th>@lang('almanac.stars')</th>
+                </tr>
+            </thead>
+            <tbody>
+                @each ($transfers['in'] as $row)
+                <tr>
+                    <td>{{ $row['name'] }}</td>
+                    <td>{{ $row['position'] }}</td>
+                    <td>{{ $row['origin'] }}</td>
+                    <td class="alm-stars">@notempty($row['stars']){{ str_repeat('★', (int) $row['stars']) }}@endnotempty</td>
+                </tr>
+                @endeach
+            </tbody>
+        </table>
+    </div>
+</section>
+@endnotempty
+
+{#
+    🚨 This panel renders only when the CONTROLLER decided the viewer may see
+    that forum. `$topics` arrives empty otherwise. Nothing here re-checks, and
+    nothing here should start listing forums it was not handed.
+#}
+@notempty($topics)
+<section class="alm-section">
+    <h3>@lang('almanac.forum_recent', ['school' => $team['school']])</h3>
+    <ul class="alm-topic-list">
+        @each ($topics as $topic)
+        <li>
+            <a href="/topic/{{ $topic['id'] }}-{{ $topic['slug'] }}">{{ $topic['title'] }}</a>
+            <span class="alm-count">{{ __n('almanac.post_count', (int) $topic['post_count']) }}</span>
+        </li>
+        @endeach
+    </ul>
+</section>
+@endnotempty
+
+<p class="alm-freshness">@lang('almanac.freshness')</p>
+@endsection
