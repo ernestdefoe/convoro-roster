@@ -21,7 +21,14 @@ use Convoro\Engine\Database\Connection;
  * one ran out. Almanac's own key wins if set, so a site that wants them
  * separate can have that.
  */
-final class Settings
+/**
+ * 🚨 Not `final`, and for one reason: the test suite runs against the SITE'S
+ * OWN database, so a test that exercised the budget guard through the real
+ * class would write `almanac_budget_remaining` into live settings. A double
+ * stands in front of it instead. That is the whole reason; there is no other
+ * subclass and there should not be one.
+ */
+class Settings
 {
     /** The stored defaults, and the list of keys `save()` will accept. */
     private const DEFAULTS = [
