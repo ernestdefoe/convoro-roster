@@ -226,19 +226,31 @@
         background: var(--c-surface);
     }
 
-    .alm-shot {
+    /*
+     * The photo is stacked ON TOP of the initials rather than swapped with
+     * them, so a headshot that 404s falls back by removing itself. See the note
+     * in front/player.cvr.
+     */
+    .alm-shot-wrap {
+        position: relative;
         width: 96px;
         height: 96px;
-        border-radius: 50%;
-        object-fit: cover;
-        background: var(--c-inset);
         flex: 0 0 auto;
     }
 
-    /* Shown when there is no ESPN headshot — see Players::headshot(). */
+    .alm-shot {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        background: var(--c-inset);
+    }
+
     .alm-initials {
-        width: 96px;
-        height: 96px;
+        position: absolute;
+        inset: 0;
         border-radius: 50%;
         background: var(--c-inset);
         color: var(--c-text-muted);
@@ -247,7 +259,6 @@
         justify-content: center;
         font-size: 1.9rem;
         font-weight: 600;
-        flex: 0 0 auto;
     }
 
     /* ------------------------------------------------------------ recruits */

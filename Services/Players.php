@@ -224,12 +224,19 @@ final class Players
     }
 
     /**
-     * A headshot, or null.
+     * Where a headshot WOULD be, or null if there cannot be one.
      *
-     * 🚨 Negative ids are CFBD's own invention for players it could not match
-     * to an ESPN athlete, and the URL they build 404s. Returning null lets the
-     * template fall back to initials rather than render a broken image, which
-     * on a roster page means a wall of them.
+     * 🚨 A URL from here is not a promise that an image exists. Negative ids are
+     * CFBD's own invention for players it could not match to an ESPN athlete
+     * and cannot have a photo at all — those return null. But a positive id
+     * only means the man was matched to an ESPN athlete, and ESPN has no
+     * picture for a great many of them: most of Vanderbilt's roster, and
+     * freshmen everywhere.
+     *
+     * Whether the image resolves is therefore a question only the browser can
+     * answer, and it is answered there — the template stacks the photo over the
+     * initials and lets a 404 remove it. Checking here would be a request per
+     * player against 41,588 of them.
      */
     public function headshot(int $cfbdId): ?string
     {

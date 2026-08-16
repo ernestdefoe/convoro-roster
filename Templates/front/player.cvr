@@ -57,12 +57,27 @@
 @endphp
 
 <div class="alm-player-head">
-    @notempty($headshot)
-    <img class="alm-shot" src="{{ $headshot }}" alt="" width="96" height="96">
-    @endnotempty
-    @empty($headshot)
-    <div class="alm-initials" aria-hidden="true">{{ $initials }}</div>
-    @endempty
+    {#
+        🚨 The initials are ALWAYS rendered, with the photo laid over them, and
+        the photo removes itself if it 404s.
+
+        A positive id means CFBD matched the player to an ESPN athlete — it does
+        NOT mean ESPN has a picture of him. Plenty of real athlete ids have no
+        headshot (Jared Curtis at Vanderbilt, among many), and the img then
+        renders as a broken-image icon in a 96px circle. There is no way to know
+        in advance without a request per player, and there are 41,588 of them.
+
+        So the fallback sits underneath rather than being chosen instead, and
+        `onerror` uncovers it. Nothing flashes: the photo only ever paints once
+        it has loaded.
+    #}
+    <div class="alm-shot-wrap">
+        <div class="alm-initials" aria-hidden="true">{{ $initials }}</div>
+        @notempty($headshot)
+        <img class="alm-shot" src="{{ $headshot }}" alt="" width="96" height="96"
+             onerror="this.remove()">
+        @endnotempty
+    </div>
 
     <div>
         <h2>{{ $player['name'] }}</h2>
