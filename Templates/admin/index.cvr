@@ -12,7 +12,7 @@
     </div>
 </div>
 
-@notempty($notice)<div class="alert alert-success">{{ $notice }}</div>@endnotempty
+@notempty($notice)<div class="admin-alert admin-alert-success">{{ $notice }}</div>@endnotempty
 
 {#
     🚨 What the machine is doing, before any form. An operator opens this screen
