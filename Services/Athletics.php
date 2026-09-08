@@ -24,7 +24,7 @@ namespace Convoro\Extensions\Almanac\Services;
  * request for a JSON site and one for an HTML one.
  *
  * 🚨 **A parser is a promise that expires.** The two HTML readers depend on
- * markup nobody owes Almanac, and August is when athletics sites get rebuilt.
+ * markup nobody owes Roster, and August is when athletics sites get rebuilt.
  * Both are written to return NOTHING rather than nonsense when the shape
  * changes — no partial rows, no names scraped out of navigation — and a team
  * that returns nothing keeps the photos it already had. What breaks is

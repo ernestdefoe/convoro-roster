@@ -30,7 +30,7 @@ final class Cfbd
 {
     private const BASE = 'https://api.collegefootballdata.com';
 
-    /** Only the top division. Almanac is an FBS almanac. */
+    /** Only the top division. Roster is an FBS almanac. */
     public const CLASSIFICATION = 'fbs';
 
     /**

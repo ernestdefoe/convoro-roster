@@ -104,6 +104,23 @@
     </div>
 
     <div class="admin-card">
+        <div class="admin-card-header">@lang('almanac.admin.heading_leagues')</div>
+        <div class="admin-card-body">
+            <p class="form-hint">@lang('almanac.admin.leagues_note')</p>
+
+            @each ($leagues as $key => $label)
+            <div class="admin-form-group">
+                <label class="admin-checkbox-label">
+                    <input type="checkbox" name="almanac_leagues[]" value="{{ $key }}"
+                           @if(in_array($key, $following, true))checked @endif>
+                    {{ $label }}
+                </label>
+            </div>
+            @endeach
+        </div>
+    </div>
+
+    <div class="admin-card">
         <div class="admin-card-header">@lang('almanac.admin.heading_scope')</div>
         <div class="admin-card-body">
             <div class="admin-form-group">

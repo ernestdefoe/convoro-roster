@@ -1,5 +1,5 @@
 {#
-    Almanac's styles, injected once per page by the template that needs them.
+    Roster's styles, injected once per page by the template that needs them.
 
     🚨 Every colour is a `--c-*` custom property. Convoro's prefix is `--c-`,
     not the `--i-` an IPS habit reaches for, and a wrong prefix paints nothing —
@@ -162,7 +162,7 @@
     }
 
     /*
-     * 🚨 No underline on hover, anywhere in Almanac. These pages are mostly
+     * 🚨 No underline on hover, anywhere in Roster. These pages are mostly
      * links — every roster row, every crest, every opponent — and underlining
      * on hover makes a table of names twitch line by line as the pointer
      * crosses it. The row highlight already says what is under the cursor.
@@ -332,6 +332,17 @@
         align-items: center;
         justify-content: center;
         margin-top: 1rem;
+    }
+
+    /*
+     * The league switcher. Wraps rather than scrolls, because the list is short
+     * and a horizontal scroller for six buttons hides half of them on a phone.
+     */
+    .alm-leagues {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5rem;
+        margin-bottom: 1.25rem;
     }
 
     /* The line that keeps every page honest about how old its rows are. */

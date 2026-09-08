@@ -10,7 +10,7 @@ namespace Convoro\Extensions\Almanac\Services;
  * A run does not try to finish. It walks an ordered PLAN of steps, spends calls
  * until the budget guard says stop, writes down where it got to, and returns.
  * The next run picks the plan up at that index. This is the only design that
- * survives the two facts Almanac lives with: a full backfill is more calls than
+ * survives the two facts Roster lives with: a full backfill is more calls than
  * anyone wants to spend at once, and a run holds a worker for as long as it
  * lasts.
  *
@@ -144,7 +144,7 @@ final class Sync
          *
          * Capped by a count of schools instead, and it never reports a fault:
          * a department's website being down is not something to put on the
-         * Almanac's status line beside a mirror that synced perfectly well.
+         * Roster's status line beside a mirror that synced perfectly well.
          */
         $photos = $this->photos->run($now);
 
@@ -305,7 +305,7 @@ final class Sync
     /**
      * Roughly which week the season is in.
      *
-     * Approximate on purpose: Almanac holds no schedule of its own, and the
+     * Approximate on purpose: Roster holds no schedule of its own, and the
      * cost of being a week out is one extra call at a boundary.
      */
     private function currentWeek(int $now): int

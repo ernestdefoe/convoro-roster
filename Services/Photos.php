@@ -51,7 +51,7 @@ class Photos
     }
 
     /**
-     * Fill in the athletics sites Almanac ships with.
+     * Fill in the athletics sites Roster ships with.
      *
      * 🚨 **Only rows that are empty or that the catalogue itself wrote.** A
      * domain typed into the admin screen is marked `manual`, and this must
@@ -208,7 +208,7 @@ class Photos
             /*
              * 🚨 One name, two men. The jersey is the only thing that separates
              * them, and where it does not — the school lists no number, or both
-             * brothers wear one Almanac has not got — NOBODY gets the photo.
+             * brothers wear one Roster has not got — NOBODY gets the photo.
              * A page with no picture is honest; a page with his brother's is a
              * mistake nothing on the screen would reveal.
              */
@@ -343,7 +343,7 @@ class Photos
     }
 
     /**
-     * The players Almanac believes are at a school now.
+     * The players Roster believes are at a school now.
      *
      * @return list<array<string, mixed>>
      */

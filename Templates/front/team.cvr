@@ -72,7 +72,7 @@
     </div>
 </div>
 
-{# A season the visitor can change. Only years Almanac holds are offered. #}
+{# A season the visitor can change. Only years Roster holds are offered. #}
 @notempty($seasons)
 <form class="alm-filters" method="get" action="/almanac/team/{{ $team['slug'] }}">
     <div>
@@ -95,7 +95,15 @@
     @endempty
 
     @each ($roster as $group => $rows)
-    <h4>{{ __($groupLabels[$group] ?? 'almanac.group.other') }}</h4>
+    {#
+        🚨 A group the provider named is printed as the provider named it —
+        "Pitchers", "Centers", "Special Team". Falling through to
+        `almanac.group.other` would relabel every group on every professional
+        roster as "Other", which is wrong and looks like a bug rather than a
+        missing translation. Only football's own four are translated, because
+        only those four are ours to name.
+    #}
+    <h4>@if(isset($groupLabels[$group])){{ __($groupLabels[$group]) }}@else{{ $group }}@endif</h4>
 
     <div class="alm-scroll">
         <table class="alm-table">

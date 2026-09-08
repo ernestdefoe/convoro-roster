@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Convoro\Extensions\Almanac\Services;
 
 /**
- * The one place Almanac talks to anything off this machine.
+ * The one place Roster talks to anything off this machine.
  *
  * Follows Picks' class of the same name — hard connect and read timeouts with
  * no way to opt out, HTTPS pinned, redirects not followed because a request
@@ -88,6 +88,26 @@ class Http
             CURLOPT_TIMEOUT => self::READ_TIMEOUT,
             CURLOPT_FOLLOWLOCATION => false,
             CURLOPT_HTTPHEADER => $lines,
+
+            /*
+             * 🚨 Say who is calling, because ESPN refuses anybody who does not.
+             *
+             * PHP's cURL extension sends NO User-Agent unless it is told to —
+             * unlike the curl command, which always sends its own. ESPN's edge
+             * answers 403 to a request with no User-Agent, and every roster
+             * fetch would be refused with an empty page as the only symptom.
+             * CollegeFootballData does not care, which is why this was never
+             * needed until rosters came from somewhere else.
+             *
+             * 🚨 This is the true identity of the client, not a disguise. The
+             * request IS libcurl, and this is the string curl itself would send
+             * — measured against ESPN: `curl/8.5.0` is answered, while a
+             * browser string, an invented product name and no header at all are
+             * all 403. Pretending to be Chrome would be both a lie and a 403.
+             *
+             * The same note stands in Picks' own `Http`, where it was found.
+             */
+            CURLOPT_USERAGENT => 'curl/' . (curl_version()['version'] ?? '8'),
 
             /*
              * Collected through the callback rather than by slicing the body at

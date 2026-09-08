@@ -6,7 +6,7 @@ use Convoro\Engine\Database\Migration\Migration;
 use Convoro\Engine\Database\Schema\Blueprint;
 
 /**
- * Almanac's tables.
+ * Roster's tables.
  *
  * The shape follows one rule: **a page render is a SELECT and never a fetch.**
  * CollegeFootballData's free tier allows a thousand calls a CALENDAR MONTH and
@@ -61,7 +61,7 @@ return new class extends Migration {
             /*
              * The team's forum, when this site has one. Resolved from Picks'
              * `picks_teams.forum_id` during sync and left at 0 otherwise —
-             * Almanac does not require Picks, and a school page on a site
+             * Roster does not require Picks, and a school page on a site
              * without it simply shows no discussion panel.
              */
             $bp->bigInt('forum_id', true)->default(0);
@@ -188,7 +188,7 @@ return new class extends Migration {
 
             /*
              * The provider's own spelling of the school is kept beside the
-             * resolved id. A commitment to a team Almanac does not carry —
+             * resolved id. A commitment to a team Roster does not carry —
              * an FCS school, or a programme that has since moved division —
              * still has to render as text rather than vanish.
              */

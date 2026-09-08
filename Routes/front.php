@@ -11,7 +11,7 @@ use Convoro\Extensions\Almanac\Controllers\Front\TeamController;
  */
 
 /*
- * No middleware on the reads. Whether Almanac answers at all is a setting, so
+ * No middleware on the reads. Whether Roster answers at all is a setting, so
  * the controller decides: an extension that is installed and switched off
  * should 404 like a page that does not exist, not 403 like one somebody is not
  * allowed to see.

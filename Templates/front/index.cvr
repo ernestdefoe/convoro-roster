@@ -44,14 +44,36 @@
     </div>
 
     <div class="page-header-actions">
+        {#
+            🚨 The recruiting board and the portal are COLLEGE FOOTBALL, and the
+            links only appear while it is what is being looked at. Neither exists
+            in professional sport, and offering them from an NBA page sends
+            somebody to a screen about a different game.
+        #}
+        @if($league === 'cfb')
         <a class="btn btn-secondary btn-sm" href="/almanac/recruiting">@lang('almanac.recruiting.nav')</a>
         <a class="btn btn-secondary btn-sm" href="/almanac/transfers">@lang('almanac.portal.nav')</a>
+        @endif
     </div>
 </div>
 
+{#
+    The league switcher. Shown only when this site holds more than one — a board
+    that follows college football alone should see no chrome for a choice it
+    does not have.
+#}
+@if(count($leagues) > 1)
+<div class="alm-leagues">
+    @each ($leagues as $key => $label)
+    <a class="btn btn-sm @if($league === $key)btn-primary @else btn-secondary @endif"
+       href="/almanac?league={{ $key }}">{{ $label }}</a>
+    @endeach
+</div>
+@endif
+
 @empty($conferences)
 {#
-    An Almanac that has been switched on but never synced. Says which of the two
+    An Roster that has been switched on but never synced. Says which of the two
     things is missing rather than "no teams", because the fix is different: one
     needs an API key, the other needs the scheduled job to have run once.
 #}

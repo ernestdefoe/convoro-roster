@@ -7,6 +7,7 @@ namespace Convoro\Extensions\Almanac\Controllers\Front;
 use Convoro\Engine\Http\Controller;
 use Convoro\Engine\Http\Request;
 use Convoro\Engine\Http\Response;
+use Convoro\Extensions\Almanac\Services\Leagues\Leagues;
 
 /**
  * The conference index and a school page.
@@ -24,9 +25,21 @@ final class TeamController extends Controller
 
         $teams = $this->app->make('almanac.teams');
 
+        /*
+         * 🚨 The league comes from the query string and is clamped to what this
+         * site actually HOLDS, not to what the registry knows about. A
+         * hand-typed `?league=nhl` on a site that follows only college football
+         * would otherwise render an empty page with no explanation.
+         */
+        $leagues = $teams->leagues();
+        $league = (string) $request->query('league', '');
+        $league = isset($leagues[$league]) ? $league : (string) array_key_first($leagues);
+
         return $this->render('almanac::front/index', [
             'user' => $this->user($request),
-            'conferences' => $teams->byConference(),
+            'leagues' => $leagues,
+            'league' => $league,
+            'conferences' => $teams->byConference($league !== '' ? $league : Leagues::DEFAULT),
             'season' => $settings->season(),
             'syncedAt' => $settings->get('almanac_sync_at'),
             'seo' => $this->seo($request)
@@ -55,11 +68,19 @@ final class TeamController extends Controller
 
         /*
          * The season being shown. A year in the query string lets somebody look
-         * at an old roster; it is clamped to what Almanac actually holds so a
+         * at an old roster; it is clamped to what Roster actually holds so a
          * hand-typed year renders the nearest real thing rather than an empty
          * page.
          */
-        $held = $teams->seasons($teamId);
+        $collegiate = $teams->collegiate($teamId);
+
+        /*
+         * 🚨 A professional club has no season picker, because ESPN answers the
+         * CURRENT roster and nothing historical. Offering a year selector that
+         * shows the same twenty players whatever is chosen is worse than
+         * offering none.
+         */
+        $held = $collegiate ? $teams->seasons($teamId) : [];
         $available = array_map(static fn (array $r): int => (int) $r['season'], $held);
         $requested = (int) $request->query('season', 0);
         $season = in_array($requested, $available, true) ? $requested : $settings->season();
@@ -91,11 +112,20 @@ final class TeamController extends Controller
             'team' => $team,
             'season' => $season,
             'seasons' => $held,
-            'record' => $teams->season($teamId, $season),
+            'record' => $collegiate ? $teams->season($teamId, $season) : null,
             'roster' => $teams->roster($teamId, $season),
-            'recruits' => $teams->recruitingClass($teamId, $season + 1),
-            'classRank' => $teams->classRank($teamId, $season + 1),
-            'transfers' => $teams->transfers($teamId, $season + 1),
+            /*
+             * 🚨 Not fetched at all for a professional club, rather than
+             * fetched and found empty. There is no signing class for the NFL in
+             * the sense this extension means and no transfer portal, so these
+             * are three queries whose answer is known — and the panels are
+             * already wrapped in `@notempty`, so an empty array is exactly what
+             * hides them.
+             */
+            'recruits' => $collegiate ? $teams->recruitingClass($teamId, $season + 1) : [],
+            'classRank' => $collegiate ? $teams->classRank($teamId, $season + 1) : null,
+            'transfers' => $collegiate ? $teams->transfers($teamId, $season + 1) : ['in' => [], 'out' => []],
+            'collegiate' => $collegiate,
             'topics' => $topics,
             'players' => $this->app->make('almanac.players'),
             'syncedAt' => $settings->get('almanac_sync_at'),

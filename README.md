@@ -1,12 +1,37 @@
-# Almanac
+# Roster
 
-Every FBS team, roster and player, for [Convoro](https://convoro.co).
+Every team, roster and player, for [Convoro](https://convoro.co).
 
-Browse by conference, open a school for its roster and its season, open a player
-for his career stats and the high-school class he came out of. Plus a national
-recruiting board and a transfer-portal tracker.
+Browse by conference or division, open a club for its roster, open a player for
+who he is. In college football that goes further: his career stats season by
+season, and the high-school class he came out of, plus a national recruiting
+board and a transfer-portal tracker.
 
 Third-party extension by Ernest Defoe. Requires Convoro **^1.5.0**.
+
+> This was called **Almanac**. The name was a college-football word for a
+> college-football extension, and it now holds the NFL, the NBA, MLB, the NHL
+> and league football too. The manifest key and the table names are unchanged —
+> renaming those would orphan an installed site's data to make a label read
+> better.
+
+## Which leagues
+
+| League | Source | What you get |
+|---|---|---|
+| College football | CollegeFootballData | Rosters, career stats, recruiting class, transfer portal |
+| NFL, NBA, MLB, NHL, MLS, Premier League, WNBA | ESPN | The current roster, with position, number, size and hometown |
+
+College football is always on. The rest are tick boxes in **Admin → Roster**,
+and they cost nothing: ESPN needs no key and does not count against the
+CollegeFootballData allowance.
+
+🚨 **The professional leagues carry a current roster and nothing historical**,
+because that is what ESPN's roster endpoint answers. There is no season picker
+on an NBA club's page, and no recruiting or portal panel, because those are not
+thin versions of something — they do not exist in professional sport. Showing
+empty panels would read as a broken page rather than as a sport that does not
+have the thing.
 
 ## What it does
 
@@ -61,7 +86,7 @@ ESPN has no picture for a great many real athletes, and almost never for a true
 freshman — the player this whole extension exists to make worth looking up. His
 school photographed him in June.
 
-So Almanac also reads each school's own roster and stores the photograph it
+So Roster also reads each school's own roster and stores the photograph it
 finds. **This spends no CollegeFootballData calls** — the athletics sites are a
 separate provider — so it keeps running on its own cadence while the CFBD mirror
 sits idle, a dozen schools a day by default.
@@ -71,8 +96,8 @@ cannot separate them — brothers, and it is not rare — neither gets the photo
 page with no picture is honest; a page with his brother's face on it is wrong in
 a way nothing on screen reveals.
 
-Almanac ships a catalogue of **134 of the 138 FBS athletics sites**, each one
-verified by checking that the roster it serves is the roster Almanac already
+Roster ships a catalogue of **134 of the 138 FBS athletics sites**, each one
+verified by checking that the roster it serves is the roster Roster already
 holds for that school. That check matters: athletics-site domains are nicknames
 (`rolltide.com`, `ramblinwreck.com`) that no provider carries, and the obvious
 way to find them — the football article's external links — is full of citations
@@ -80,7 +105,7 @@ to the *opponent's* site. Four schools are unresolved (Arkansas, Georgia Tech,
 Utah State, Wyoming); their players fall back to ESPN until somebody fills the
 domain in.
 
-**Admin → Almanac** lists every school with the site it reads. A domain typed in
+**Admin → Roster** lists every school with the site it reads. A domain typed in
 there is kept as yours and is never overwritten by an update.
 
 ### The four platforms
@@ -95,7 +120,7 @@ platform decides which endpoint answers:
 | `classic` | the older server-rendered SIDEARM page | 19 |
 | `wpx`     | a WordPress build; players keyed off the photo's `title` | 3 |
 
-🚨 The two HTML readers depend on markup nobody owes Almanac, and August is when
+🚨 The two HTML readers depend on markup nobody owes Roster, and August is when
 athletics sites get rebuilt. Both return **nothing** rather than nonsense when
 the shape changes, and a school that returns nothing keeps the photographs it
 already had — so the failure mode is staleness the admin screen can show, not a
@@ -104,8 +129,8 @@ roster of wrong faces.
 ## Setup
 
 1. Install and enable the extension.
-2. **Admin → Almanac**: switch it on. If Picks already holds a
-   CollegeFootballData key, Almanac borrows it and you can leave the field
+2. **Admin → Roster**: switch it on. If Picks already holds a
+   CollegeFootballData key, Roster borrows it and you can leave the field
    blank; otherwise paste one.
 3. Press **Run a sync now**, or wait for the daily tick. The backfill takes a
    few runs.
@@ -137,7 +162,7 @@ php tools/convoro ext:package almanac && php tools/convoro ext:install almanac-1
 
 ## Picks and forums are optional
 
-Almanac does not depend on Picks. It borrows Picks' API key if one is there, and
+Roster does not depend on Picks. It borrows Picks' API key if one is there, and
 reads `picks_teams.forum_id` to point each school at its forum — both wrapped,
 so on a site without Picks it asks for its own key and school pages simply show
 no discussion panel.

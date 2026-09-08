@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Convoro\Extensions\Almanac\Services;
 
 /**
- * What is left of the month's calls, and whether Almanac may spend one.
+ * What is left of the month's calls, and whether Roster may spend one.
  *
  * CollegeFootballData's free tier allows **a thousand calls per calendar
  * month**, and it reports what is left in `x-calllimit-remaining` on every
- * response. Almanac's first backfill is roughly a hundred calls, and a
+ * response. Roster's first backfill is roughly a hundred calls, and a
  * re-backfill after somebody widens `almanac_seasons_back` can be several
  * times that — enough to end a month early if nothing is watching.
  *
@@ -29,7 +29,7 @@ namespace Convoro\Extensions\Almanac\Services;
  *
  * 🚨 **An unknown budget is spendable.** Before the first call of a run nothing
  * has reported a figure, and a guard that refused to start without one would
- * mean Almanac never made its first call and so never learned the number —
+ * mean Roster never made its first call and so never learned the number —
  * a deadlock that looks exactly like a broken API key. The first call goes out;
  * every call after it is checked.
  */

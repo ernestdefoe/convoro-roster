@@ -244,7 +244,7 @@ final class Players
     }
 
     /**
-     * The best picture Almanac has of a player: his school's, then ESPN's.
+     * The best picture Roster has of a player: his school's, then ESPN's.
      *
      * 🚨 The school's photograph wins whenever there is one, and it is worth
      * being clear why, because ESPN's is the one that costs nothing to keep

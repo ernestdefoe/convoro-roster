@@ -8,7 +8,7 @@ use Convoro\Engine\Database\Schema\Blueprint;
 /**
  * Where a school publishes, and the photo it publishes of each player.
  *
- * Almanac shipped with ESPN headshots, which are free — CFBD's player ids ARE
+ * Roster shipped with ESPN headshots, which are free — CFBD's player ids ARE
  * ESPN athlete ids — but thin. ESPN has no picture for a great many real
  * athletes, and a true freshman, the player this whole extension was built to
  * make worth looking up, almost never has one. Every school does have one: it

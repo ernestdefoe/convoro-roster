@@ -142,7 +142,7 @@
                     </a>
                     @endnotempty
                     @empty($row['committed_slug'])
-                    {# A commitment to a school Almanac does not carry still reads as text. #}
+                    {# A commitment to a school Roster does not carry still reads as text. #}
                     @notempty($row['committed_to']){{ $row['committed_to'] }}@endnotempty
                     @empty($row['committed_to'])<span class="alm-count">@lang('almanac.undecided')</span>@endempty
                     @endempty

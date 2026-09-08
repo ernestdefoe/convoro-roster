@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * Almanac.
+ * Roster.
  *
  * 🚨 One rule carries this extension: **a page render is a SELECT and never a
  * fetch.** CollegeFootballData allows a thousand calls a CALENDAR MONTH on the
@@ -248,7 +248,7 @@ return [
          * styled. A class name that does not exist is invisible in code review
          * and obvious on screen.
          *
-         * Almanac's own `alm-*` rules count as defined, which is the other half
+         * Roster's own `alm-*` rules count as defined, which is the other half
          * of the same check: a rule nobody defined is as broken as a class
          * nobody has.
          */
@@ -743,7 +743,7 @@ return [
     'a roster page nobody can parse any more returns nothing, not nonsense' => static function (): void {
         /*
          * 🚨 Two of the four readers are HTML parsers, against markup nobody
-         * owes Almanac, and August is when athletics sites get rebuilt. The
+         * owes Roster, and August is when athletics sites get rebuilt. The
          * failure has to be an EMPTY answer — which leaves every stored photo
          * alone — rather than half-read names, which would hang faces on the
          * wrong men and look like data.

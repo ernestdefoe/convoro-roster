@@ -7,10 +7,11 @@ namespace Convoro\Extensions\Almanac\Controllers\Admin;
 use Convoro\Engine\Http\Controller;
 use Convoro\Engine\Http\Request;
 use Convoro\Engine\Http\Response;
-use Convoro\Extensions\Almanac\Almanac;
+use Convoro\Extensions\Almanac\Services\Leagues\Leagues;
+use Convoro\Extensions\Almanac\Roster;
 
 /**
- * Almanac's admin screen.
+ * Roster's admin screen.
  *
  * 🚨 **Rendering this page makes no outbound call**, and "Run a sync now"
  * QUEUES one rather than performing it in the request. A backfill is tens of
@@ -21,6 +22,23 @@ use Convoro\Extensions\Almanac\Almanac;
 final class AlmanacController extends Controller
 {
     private const NOTICE = 'almanac_admin_notice';
+
+    /** The leagues chosen on the form, as a stored comma list. */
+    private function leagues(Request $request): string
+    {
+        $registry = new Leagues();
+        $chosen = [];
+
+        foreach ((array) $request->input('almanac_leagues', []) as $key) {
+            $key = trim((string) $key);
+
+            if ($key !== '' && $key !== Leagues::DEFAULT && $registry->has($key)) {
+                $chosen[$key] = $key;
+            }
+        }
+
+        return implode(',', array_keys($chosen));
+    }
 
     public function index(Request $request): Response
     {
@@ -38,6 +56,17 @@ final class AlmanacController extends Controller
         return $this->render('almanac::admin/index', [
             'user' => $this->user($request),
             'settings' => $settings,
+            /*
+             * 🚨 Every league EXCEPT college football, because that one is not
+             * optional and is not ESPN's. It is what this extension is, it
+             * comes from CollegeFootballData, and offering it as a tick box
+             * alongside the others would suggest it could be turned off here.
+             */
+            'leagues' => array_diff_key((new Leagues())->choices(), [Leagues::DEFAULT => true]),
+            'following' => array_filter(array_map(
+                'trim',
+                explode(',', $settings->get('almanac_leagues'))
+            )),
             'notice' => $this->session($request)->getFlash(self::NOTICE),
             'status' => $settings->get('almanac_sync_status'),
             'syncedAt' => $settings->get('almanac_sync_at'),
@@ -69,6 +98,13 @@ final class AlmanacController extends Controller
             'almanac_photos' => $request->input('almanac_photos') === '1' ? '1' : '0',
             'almanac_photo_teams' => (string) $request->input('almanac_photo_teams', '12'),
             'almanac_photo_days' => (string) $request->input('almanac_photo_days', '14'),
+            /*
+             * 🚨 Filtered through the registry rather than stored as posted. A
+             * key that is not a league syncs nothing and explains nothing about
+             * why, and this is the one moment somebody is looking at the screen
+             * and could fix it.
+             */
+            'almanac_leagues' => $this->leagues($request),
         ]);
 
         return $this->ok($request, __('almanac.saved'));

@@ -91,7 +91,7 @@ final class Store
     /**
      * Point each team at its forum, using Picks' mapping where there is one.
      *
-     * 🚨 Wrapped, because Almanac does not depend on Picks. A site without it
+     * 🚨 Wrapped, because Roster does not depend on Picks. A site without it
      * has no `picks_teams` table, and the whole feature is a panel that does
      * not render rather than an error on every school page.
      */
@@ -144,7 +144,7 @@ final class Store
     /**
      * A season's rosters: the people, and their appearance that year.
      *
-     * 🚨 Only rows whose team Almanac carries are written. `/roster` answers
+     * 🚨 Only rows whose team Roster carries are written. `/roster` answers
      * for every division — 315 teams — and the other 180 are programmes no page
      * here can link to.
      *
@@ -296,7 +296,7 @@ final class Store
      * Fill in first and last season from the appearances actually stored.
      *
      * Cheaper and more honest than tracking it on the way in: it describes what
-     * Almanac HOLDS, so a player page never claims a career that reaches back
+     * Roster HOLDS, so a player page never claims a career that reaches back
      * further than the seasons this site synced.
      */
     public function recomputeCareerSpans(): int

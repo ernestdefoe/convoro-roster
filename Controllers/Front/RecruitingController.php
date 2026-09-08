@@ -27,7 +27,7 @@ final class RecruitingController extends Controller
         $recruits = $this->app->make('almanac.recruits');
         $years = $recruits->years();
 
-        /* Clamped to a class Almanac holds, so a typed year cannot render empty. */
+        /* Clamped to a class Roster holds, so a typed year cannot render empty. */
         $requested = (int) $request->query('year', 0);
         $year = in_array($requested, $years, true)
             ? $requested

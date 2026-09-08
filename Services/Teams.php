@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Convoro\Extensions\Almanac\Services;
 
 use Convoro\Engine\Database\Connection;
+use Convoro\Extensions\Almanac\Services\Leagues\Leagues;
 
 /**
  * What the conference index and a school page read.
@@ -44,20 +45,30 @@ final class Teams
      *
      * @return list<array{conference: string, teams: list<array<string, mixed>>}>
      */
-    public function byConference(): array
+    public function byConference(string $league = Leagues::DEFAULT): array
     {
         $rows = $this->db->select(
             'SELECT `id`, `school`, `slug`, `mascot`, `abbreviation`, `conference`,'
             . ' `logo`, `logo_dark`, `color`, `forum_id`'
             . ' FROM `' . $this->db->prefixed('almanac_teams') . '`'
-            . ' ORDER BY `conference` ASC, `school` ASC'
+            . ' WHERE `league` = ?'
+            . ' ORDER BY `conference` ASC, `school` ASC',
+            [$league]
         );
 
         $grouped = [];
 
         foreach ($rows as $row) {
             $conference = (string) ($row['conference'] ?? '');
-            $grouped[$conference === '' ? 'Independent' : $conference][] = $row;
+
+            /*
+             * 🚨 "Independent" is a college-football word. A professional club
+             * with no division — which is most of league football, where there
+             * is one table and no groups — is not independent of anything, and
+             * filing it under that reads as a mistake. It gets the plain
+             * heading instead.
+             */
+            $grouped[$conference === '' ? $this->ungrouped($league) : $conference][] = $row;
         }
 
         uksort($grouped, static function (string $a, string $b) use ($grouped): int {
@@ -70,6 +81,41 @@ final class Teams
             $out[] = ['conference' => $conference, 'teams' => $teams];
         }
 
+        return $out;
+    }
+
+    private function ungrouped(string $league): string
+    {
+        return $league === Leagues::DEFAULT
+            ? 'Independent'
+            : (new Leagues())->get($league)->name;
+    }
+
+    /** Which leagues this site actually holds teams for, in registry order. */
+    public function leagues(): array
+    {
+        $held = [];
+
+        foreach ($this->db->select(
+            'SELECT DISTINCT `league` FROM `' . $this->db->prefixed('almanac_teams') . '`'
+        ) as $row) {
+            $held[(string) $row['league']] = true;
+        }
+
+        $registry = new Leagues();
+        $out = [];
+
+        foreach ($registry->all() as $key => $league) {
+            if (isset($held[$key])) {
+                $out[$key] = $league->name;
+            }
+        }
+
+        /*
+         * 🚨 Empty rather than a default when nothing is held. A brand-new
+         * install has no teams at all, and offering a switcher with one dead
+         * option in it is worse than offering none.
+         */
         return $out;
     }
 
@@ -97,7 +143,7 @@ final class Teams
     }
 
     /**
-     * Every season Almanac holds for this team, newest first.
+     * Every season Roster holds for this team, newest first.
      *
      * @return list<array<string, mixed>>
      */
@@ -126,6 +172,22 @@ final class Teams
          * The player row carries who he is today; this table carries where he
          * was then.
          */
+        /*
+         * 🚨 Two ways of reading a roster, because there are two kinds of
+         * roster here.
+         *
+         * College football has an APPEARANCE per player per year, so an old
+         * season shows the roster as it was — the player row says who he is
+         * today and `almanac_player_seasons` says where he was then. ESPN
+         * answers only the CURRENT roster and nothing historical, so there is
+         * no old season to show and the honest read is the player rows
+         * themselves. Pretending otherwise would render every professional club
+         * empty, because that join is on `cfbd_id` and an ESPN player has none.
+         */
+        if (!$this->collegiate($teamId)) {
+            return $this->currentRoster($teamId);
+        }
+
         $rows = $this->db->select(
             "SELECT p.`id`, p.`cfbd_id`, p.`name`, p.`slug`, p.`recruit_id`,"
             . " s.`position`, s.`jersey`, s.`height`, s.`weight`, s.`class_year`,"
@@ -158,6 +220,48 @@ final class Teams
         }
 
         return array_filter($grouped, static fn (array $g): bool => $g !== []);
+    }
+
+    /** Whether a team is one CollegeFootballData answers for. */
+    public function collegiate(int $teamId): bool
+    {
+        $row = $this->db->selectOne(
+            'SELECT `league` FROM `' . $this->db->prefixed('almanac_teams') . '` WHERE `id` = ?',
+            [$teamId],
+        );
+
+        return (new Leagues())->get($row['league'] ?? null)->collegiate;
+    }
+
+    /**
+     * A professional club's roster, as it stands today.
+     *
+     * 🚨 Grouped by the group the PROVIDER gave — Pitchers and Catchers,
+     * Centers and Wingers, offence and defence — rather than by mapping a
+     * position through a list of football ones. A shortstop run through that
+     * list comes out as "other", and so does everybody else on the team.
+     *
+     * @return array<string, list<array<string, mixed>>>
+     */
+    private function currentRoster(int $teamId): array
+    {
+        $rows = $this->db->select(
+            'SELECT `id`, `name`, `slug`, `position`, `position_group`, `jersey`,'
+            . ' `height`, `weight`, `home_city`, `home_state`'
+            . ' FROM `' . $this->db->prefixed('almanac_players') . '`'
+            . ' WHERE `team_id` = ?'
+            . ' ORDER BY `position_group` ASC, `jersey` IS NULL, `jersey` ASC, `name` ASC',
+            [$teamId],
+        );
+
+        $grouped = [];
+
+        foreach ($rows as $row) {
+            $group = trim((string) ($row['position_group'] ?? ''));
+            $grouped[$group === '' ? 'other' : $group][] = $row;
+        }
+
+        return $grouped;
     }
 
     /** Which display group a position belongs to. */

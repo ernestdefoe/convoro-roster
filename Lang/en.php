@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * Every human string Almanac puts on a screen.
+ * Every human string Roster puts on a screen.
  *
  * 🚨 `{name}` for a placeholder, and exactly TWO forms separated by `|` for a
  * plural — which is reached through `__n()`, never `@lang`, because `@lang`
@@ -15,15 +15,15 @@ declare(strict_types=1);
  */
 
 return [
-    'name' => 'Almanac',
-    'nav' => 'Almanac',
-    'admin_title' => 'Almanac',
+    'name' => 'Roster',
+    'nav' => 'Roster',
+    'admin_title' => 'Roster',
 
     'save' => 'Save',
     'saved' => 'Saved.',
 
-    'title' => 'Almanac',
-    'intro' => 'Every FBS team, roster and player. Pick a school to see who is on it.',
+    'title' => 'Roster',
+    'intro' => 'Every team, roster and player. Pick a club to see who is on it.',
     'not_found' => 'There is nothing here.',
     'team_not_found' => 'No such school.',
     'player_not_found' => 'No such player.',
@@ -131,19 +131,21 @@ return [
 
     /* ------------------------------------------------------------ admin */
 
-    'admin.intro' => 'Almanac mirrors CollegeFootballData on a schedule. Nothing is fetched while somebody is looking at a page.',
+    'admin.intro' => 'Roster mirrors CollegeFootballData on a schedule. Nothing is fetched while somebody is looking at a page.',
 
-    'admin.heading_switch' => 'Almanac',
+    'admin.heading_switch' => 'Roster',
     'admin.heading_api' => 'CollegeFootballData',
+    'admin.heading_leagues' => 'Other leagues',
+    'admin.leagues_note' => 'College football is always here — it is what this is, and it comes from CollegeFootballData. Tick any others to carry as well. Those come from ESPN, which needs no key and costs nothing against your allowance, and they bring a current roster rather than a season-by-season history: there is no recruiting class or transfer portal in professional sport.',
     'admin.heading_scope' => 'How much to carry',
     'admin.heading_budget' => 'Spending',
     'admin.heading_restart' => 'Start again',
     'admin.unchanged' => 'A key is stored. Leave blank to keep it.',
 
-    'admin.enabled' => 'Switch Almanac on',
-    'admin.enabled_note' => 'While this is off, every Almanac page answers as though it does not exist.',
+    'admin.enabled' => 'Switch Roster on',
+    'admin.enabled_note' => 'While this is off, every Roster page answers as though it does not exist.',
     'admin.api_key' => 'CollegeFootballData API key',
-    'admin.api_key_note' => 'Leave blank to keep the stored key. If Picks already holds one, Almanac borrows it and you can leave this empty.',
+    'admin.api_key_note' => 'Leave blank to keep the stored key. If Picks already holds one, Roster borrows it and you can leave this empty.',
     'admin.api_key_borrowed' => 'Currently borrowing the key Picks holds.',
     'admin.season' => 'Season',
     'admin.season_note' => 'Leave blank to work it out from the date. January and February count as the previous season.',
@@ -154,7 +156,7 @@ return [
     'admin.game_logs' => 'Fetch game by game',
     'admin.game_logs_note' => 'The most expensive dataset — one call per week of the season, and there is no whole-season shortcut.',
     'admin.budget_reserve' => 'Calls to hold back',
-    'admin.budget_reserve_note' => 'The sync stops rather than spend below this, so Almanac can never take the whole monthly allowance.',
+    'admin.budget_reserve_note' => 'The sync stops rather than spend below this, so Roster can never take the whole monthly allowance.',
     'admin.run_cap' => 'Calls per run',
     'admin.run_cap_note' => 'A ceiling on a single scheduled run, so one tick cannot spend the month.',
     'admin.refresh_days' => 'Days between refreshes',
@@ -181,7 +183,7 @@ return [
 
     /* Photographs, from the schools' own sites. */
     'admin.heading_photos' => 'Player photographs',
-    'admin.photos_note' => 'Almanac uses each school’s own roster photograph where it can find one, and falls back to ESPN. The schools’ sites are free to read, so none of this touches the CollegeFootballData allowance.',
+    'admin.photos_note' => 'Roster uses each school’s own roster photograph where it can find one, and falls back to ESPN. The schools’ sites are free to read, so none of this touches the CollegeFootballData allowance.',
     'admin.photos' => 'Use the schools’ photographs',
     'admin.photos_enabled_note' => 'Turn this off and player pages fall back to ESPN headshots, which are missing for a great many players and almost every freshman.',
     'admin.photos_coverage' => '{covered} of {current} current players have their school’s photograph.',
@@ -193,7 +195,7 @@ return [
     'admin.photos_now' => 'Read the next schools now',
 
     'admin.heading_sites' => 'Where each school publishes',
-    'admin.sites_note' => 'Almanac ships with these, verified school by school. A domain typed in here is kept as yours and is never overwritten by an update. Clear one to hand it back to the shipped list. The platform is which kind of site it is — leave it as it is unless a school has rebuilt.',
+    'admin.sites_note' => 'Roster ships with these, verified school by school. A domain typed in here is kept as yours and is never overwritten by an update. Clear one to hand it back to the shipped list. The platform is which kind of site it is — leave it as it is unless a school has rebuilt.',
     'admin.site_school' => 'School',
     'admin.site_domain' => 'Athletics site',
     'admin.site_platform' => 'Platform',

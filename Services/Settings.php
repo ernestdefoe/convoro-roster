@@ -7,18 +7,18 @@ namespace Convoro\Extensions\Almanac\Services;
 use Convoro\Engine\Database\Connection;
 
 /**
- * How this site runs Almanac, and what the last sync found.
+ * How this site runs Roster, and what the last sync found.
  *
  * Follows Picks' service of the same name: everything is a string because that
  * is what the settings table holds, `save()` writes only keys listed in
  * DEFAULTS so a stray form field cannot become a site-wide setting, and a blank
  * credential LEAVES THE STORED ONE ALONE rather than clearing it.
  *
- * 🚨 **The API key is borrowed from Picks when Almanac has none of its own.**
+ * 🚨 **The API key is borrowed from Picks when Roster has none of its own.**
  * Both extensions talk to CollegeFootballData, both spend from the same
  * thousand-calls-a-month allowance, and asking an operator to paste the same
  * key twice is how a site ends up with two keys, two budgets and no idea which
- * one ran out. Almanac's own key wins if set, so a site that wants them
+ * one ran out. Roster's own key wins if set, so a site that wants them
  * separate can have that.
  */
 /**
@@ -61,7 +61,7 @@ class Settings
         'almanac_game_logs' => '1',
 
         /*
-         * Calls the sync will NOT spend, so Almanac can never take the whole
+         * Calls the sync will NOT spend, so Roster can never take the whole
          * month on its own.
          *
          * Deliberately small. Picks draws on the same thousand-a-month
@@ -108,6 +108,16 @@ class Settings
         /* Days before a school is due again. */
         'almanac_photo_days' => '14',
 
+        /*
+         * Other leagues to carry, as a comma list of registry keys.
+         *
+         * 🚨 Empty by default, and college football is never in it. That one is
+         * not a choice — it is what this extension is, and it comes from
+         * CollegeFootballData rather than ESPN. Every existing install stays
+         * exactly as it is until somebody ticks something.
+         */
+        'almanac_leagues' => '',
+
         /* What the last run wrote down, for the admin screen and the pages. */
         'almanac_sync_status' => '',
         'almanac_sync_error' => '',
@@ -146,10 +156,10 @@ class Settings
     }
 
     /**
-     * The CollegeFootballData key, Almanac's own if set and Picks' otherwise.
+     * The CollegeFootballData key, Roster's own if set and Picks' otherwise.
      *
      * 🚨 Read straight from the settings row rather than through Picks' class,
-     * because Almanac does not depend on Picks and must not fatal on a site
+     * because Roster does not depend on Picks and must not fatal on a site
      * that has never installed it. A missing row is simply an empty string.
      */
     public function cfbdKey(): string
@@ -171,7 +181,7 @@ class Settings
     }
 
     /**
-     * The season Almanac presents.
+     * The season Roster presents.
      *
      * 🚨 Falls forward, not back. College football's season is named for the
      * calendar year it starts in, so January and February belong to the year
@@ -248,7 +258,7 @@ class Settings
      * Things an operator needs to know about, counted for the admin menu pip.
      *
      * 🚨 Deliberately narrow: switched on and unable to answer. That state is
-     * otherwise invisible — an Almanac with a rejected API key looks exactly
+     * otherwise invisible — an Roster with a rejected API key looks exactly
      * like one in the off season — whereas "switched off" is a choice somebody
      * made and does not deserve a badge nagging them about it.
      *
@@ -332,7 +342,7 @@ class Settings
         $this->values = [];
 
         /*
-         * Almanac's own keys plus Picks' credential — see cfbdKey(). Two narrow
+         * Roster's own keys plus Picks' credential — see cfbdKey(). Two narrow
          * reads rather than loading the whole settings table on every page.
          */
         foreach ($this->db->table('settings')->whereLike('key', 'almanac\_%')->get() as $row) {
