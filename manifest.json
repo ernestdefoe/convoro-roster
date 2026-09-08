@@ -3,6 +3,7 @@
     "name": "Roster",
     "version": "1.2.0",
     "description": "Every team, roster and player in one place. Browse by conference or division, open a club for its roster, then open a player for who he is and — in college football — his career stats and the high-school class he came out of. College football comes from CollegeFootballData with a recruiting board and a transfer-portal tracker; the NFL, NBA, MLB, NHL and league football come from ESPN, which needs no key. Nothing is ever fetched while a page is rendering.",
+    "license": "MIT",
     "author": "Ernest Defoe",
     "convoro": "^1.5.0",
     "requires": [
