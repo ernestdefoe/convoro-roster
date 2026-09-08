@@ -9,6 +9,8 @@ board and a transfer-portal tracker.
 
 Third-party extension by Ernest Defoe. Requires Convoro **^1.5.0**.
 
+![The Roster index: an NFL/NBA switcher, clubs grouped by division, with crests](screenshots/leagues.png)
+
 > This was called **Almanac**. The name was a college-football word for a
 > college-football extension, and it now holds the NFL, the NBA, MLB, the NHL
 > and league football too. The manifest key and the table names are unchanged —
@@ -25,6 +27,15 @@ Third-party extension by Ernest Defoe. Requires Convoro **^1.5.0**.
 College football is always on. The rest are tick boxes in **Admin → Roster**,
 and they cost nothing: ESPN needs no key and does not count against the
 CollegeFootballData allowance.
+
+A club's roster, in the groups the provider itself uses:
+
+![A Boston Celtics roster: Centers, Forwards and Guards, with heights and hometowns](screenshots/roster-basketball.png)
+
+And college football, which goes much further — a class year, a career, and the
+high-school class the player came out of:
+
+![A Notre Dame roster: offence by position, with class, height, weight and hometown](screenshots/roster-college-football.png)
 
 🚨 **The professional leagues carry a current roster and nothing historical**,
 because that is what ESPN's roster endpoint answers. There is no season picker
