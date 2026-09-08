@@ -273,9 +273,22 @@ final class Players
             : sprintf('%d-%d', intdiv($inches, 12), $inches % 12);
     }
 
-    /** CFBD's class numbering, as a word. */
+    /**
+     * CollegeFootballData's class numbering, as a word.
+     *
+     * 🚨 The null is checked BEFORE the lookup, not after it with `??`. A
+     * professional player has no class year — there is no such thing as a
+     * sophomore in the NBA — and `[...][null]` is "using null as an array
+     * offset", a deprecation notice. Convoro's error handler throws on every
+     * notice, so that reads as a 500 on the club page rather than as a blank
+     * cell. Found the first time an NBA roster was rendered.
+     */
     public function classYear(?int $year): ?string
     {
+        if ($year === null) {
+            return null;
+        }
+
         return [
             1 => 'almanac.class.freshman',
             2 => 'almanac.class.sophomore',

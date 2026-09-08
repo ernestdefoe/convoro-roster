@@ -112,7 +112,14 @@
                     <th>@lang('almanac.jersey')</th>
                     <th>@lang('almanac.player')</th>
                     <th>@lang('almanac.position')</th>
-                    <th>@lang('almanac.class')</th>
+                    {#
+                        🚨 A college column. There is no such thing as a
+                        sophomore in the NBA, so a professional club gets an
+                        empty column under a heading that means nothing here —
+                        which reads as missing data rather than as a concept
+                        the sport does not have.
+                    #}
+                    @if($collegiate)<th>@lang('almanac.class')</th>@endif
                     <th>@lang('almanac.height')</th>
                     <th>@lang('almanac.weight')</th>
                     <th>@lang('almanac.hometown')</th>
@@ -131,10 +138,12 @@
                     <td class="alm-num">@if ($row['jersey'] !== null){{ $row['jersey'] }}@endif</td>
                     <td><a href="/almanac/player/{{ $row['slug'] }}">{{ $row['name'] }}</a></td>
                     <td>{{ $row['position'] }}</td>
+                    @if($collegiate)
                     <td>
                         @php $class = $players->classYear(isset($row['class_year']) ? (int) $row['class_year'] : null); @endphp
                         @notempty($class){{ __($class) }}@endnotempty
                     </td>
+                    @endif
                     <td>
                         @php $ht = $players->height(isset($row['height']) ? (int) $row['height'] : null); @endphp
                         @notempty($ht){{ $ht }}@endnotempty
