@@ -43,6 +43,23 @@
         object-fit: contain;
     }
 
+    /*
+     * 🚨 The sizes a crest actually comes in, as classes.
+     *
+     * `--alm-crest` is the right mechanism — one rule, any size — but it was
+     * being set from a `style` attribute on five img tags, which is the one
+     * thing the design audit refuses: a value written into markup is a value
+     * nothing can find again. There are three of them and they are the same
+     * three every time, so they are named here and the templates ask for a
+     * size rather than stating one.
+     *
+     * The variable stays, and so does its 40px default: a crest with none of
+     * these classes is still the ordinary one on a team row.
+     */
+    .alm-crest-sm { --alm-crest: 22px; }
+    .alm-crest-md { --alm-crest: 28px; }
+    .alm-crest-lg { --alm-crest: 32px; }
+
     .alm-team-name {
         font-weight: 600;
         line-height: 1.2;

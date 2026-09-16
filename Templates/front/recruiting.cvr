@@ -137,7 +137,7 @@
                     @php $committedLogo = $crest($row, 'committed_logo', 'committed_logo_dark'); @endphp
                     @notempty($row['committed_slug'])
                     <a class="alm-team" href="/almanac/team/{{ $row['committed_slug'] }}">
-                        @notempty($committedLogo)<img class="alm-crest" src="{{ $committedLogo }}" alt="" width="22" height="22" style="--alm-crest: 22px">@endnotempty
+                        @notempty($committedLogo)<img class="alm-crest alm-crest-sm" src="{{ $committedLogo }}" alt="" width="22" height="22">@endnotempty
                         <span>{{ $row['committed_to'] }}</span>
                     </a>
                     @endnotempty
@@ -173,7 +173,7 @@
         @each ($rankings as $row)
         <a class="alm-team" href="/almanac/team/{{ $row['slug'] }}">
             @php $rankLogo = $crest($row, 'logo', 'logo_dark'); @endphp
-            @notempty($rankLogo)<img class="alm-crest" src="{{ $rankLogo }}" alt="" width="32" height="32" style="--alm-crest: 32px">@endnotempty
+            @notempty($rankLogo)<img class="alm-crest alm-crest-lg" src="{{ $rankLogo }}" alt="" width="32" height="32">@endnotempty
             <span>
                 <span class="alm-team-name">#{{ $row['rank'] }} {{ $row['school'] }}</span>
                 <span class="alm-team-sub">{{ $row['points'] }} @lang('almanac.points')</span>

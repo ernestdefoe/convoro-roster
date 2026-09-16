@@ -92,7 +92,7 @@
                     @php $originLogo = $crest($row, 'origin_logo', 'origin_logo_dark'); @endphp
                     @notempty($row['origin_slug'])
                     <a class="alm-team" href="/almanac/team/{{ $row['origin_slug'] }}">
-                        @notempty($originLogo)<img class="alm-crest" src="{{ $originLogo }}" alt="" width="22" height="22" style="--alm-crest: 22px">@endnotempty
+                        @notempty($originLogo)<img class="alm-crest alm-crest-sm" src="{{ $originLogo }}" alt="" width="22" height="22">@endnotempty
                         <span>{{ $row['origin'] }}</span>
                     </a>
                     @endnotempty
@@ -102,7 +102,7 @@
                     @php $destLogo = $crest($row, 'destination_logo', 'destination_logo_dark'); @endphp
                     @notempty($row['destination_slug'])
                     <a class="alm-team" href="/almanac/team/{{ $row['destination_slug'] }}">
-                        @notempty($destLogo)<img class="alm-crest" src="{{ $destLogo }}" alt="" width="22" height="22" style="--alm-crest: 22px">@endnotempty
+                        @notempty($destLogo)<img class="alm-crest alm-crest-sm" src="{{ $destLogo }}" alt="" width="22" height="22">@endnotempty
                         <span>{{ $row['destination'] }}</span>
                     </a>
                     @endnotempty

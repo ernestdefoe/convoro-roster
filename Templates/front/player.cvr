@@ -98,7 +98,7 @@
         <p>
             <a class="alm-team" href="/almanac/team/{{ $player['team_slug'] }}">
                 @php $teamLogo = $crest($player); @endphp
-                @notempty($teamLogo)<img class="alm-crest" src="{{ $teamLogo }}" alt="" width="28" height="28" style="--alm-crest: 28px">@endnotempty
+                @notempty($teamLogo)<img class="alm-crest alm-crest-md" src="{{ $teamLogo }}" alt="" width="28" height="28">@endnotempty
                 <span class="alm-team-name">{{ $player['school'] }}</span>
             </a>
         </p>
